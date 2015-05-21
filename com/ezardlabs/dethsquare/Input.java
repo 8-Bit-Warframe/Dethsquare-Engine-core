@@ -1,11 +1,20 @@
 package com.ezardlabs.dethsquare;
 
-public class Input {
-	public static float x = 0;
-	public static float y = 0;
+import java.util.Arrays;
 
-	public static void set(float x, float y) {
-		Input.x = x;
-		Input.y = y;
+public class Input {
+	public static OnTouchListener[] onTouchListeners = new OnTouchListener[0];
+
+	public static void addOnTouchListener(OnTouchListener listener) {
+		onTouchListeners = Arrays.copyOf(onTouchListeners, onTouchListeners.length + 1);
+		Input.onTouchListeners[onTouchListeners.length - 1] = listener;
+	}
+
+	public interface OnTouchListener {
+		void onTouchDown(int id, float x, float y);
+
+		void onTouchMove(int id, float x, float y);
+
+		void onTouchUp(int id, float x, float y);
 	}
 }

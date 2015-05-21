@@ -11,7 +11,8 @@ public class Animation {
 
 	public enum AnimationType {
 		LOOP,
-		ONE_SHOT
+		ONE_SHOT,
+		OSCILLATE
 	}
 
 	public Animation(String name, Sprite[] frames, AnimationType type, long frameDuration) {
@@ -28,6 +29,6 @@ public class Animation {
 	}
 
 	public interface AnimationListener {
-		void onFrameChanged(int oldFrame, int newFrame);
+		void onAnimationFinished(Animator animator);
 	}
 }

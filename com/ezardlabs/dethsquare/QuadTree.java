@@ -51,8 +51,8 @@ public final class QuadTree<T extends BoundedComponent> {
 		finalise(items);
 	}
 
-	static ArrayList<BoundedComponent> retrieve(ArrayList<BoundedComponent> returnObjects,
-			QuadTree qt, BoundedComponent bc) {
+	static <T extends BoundedComponent> ArrayList<T> retrieve(ArrayList<T> returnObjects,
+			QuadTree<T> qt, BoundedComponent bc) {
 		if (qt.nodes[0] != null) {
 			for (QuadTree qt2 : qt.nodes) {
 				if (qt2.bounds.contains(bc.bounds)) {

@@ -13,7 +13,7 @@ public class Renderer extends BoundedComponent {
 	private static QuadTree<Renderer> qt = new QuadTree<>(30);
 	private static ArrayList<Renderer> renderers = new ArrayList<>();
 
-	private Sprite sprite;
+	Sprite sprite;
 	public float width;
 	public float height;
 	private int zIndex = 0;

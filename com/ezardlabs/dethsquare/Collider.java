@@ -6,14 +6,20 @@ public class Collider extends BoundedComponent {
 	public static final ArrayList<Collider> normalColliders = new ArrayList<>();
 	public static final ArrayList<Collider> staticColliders = new ArrayList<>();
 	public static final ArrayList<Collider> triggerColliders = new ArrayList<>();
-	public static QuadTree qt = new QuadTree(20);
+	public static QuadTree<Collider> qt = new QuadTree<>(20);
 	public final RectF lastBounds = new RectF();
 	private final float height;
 	private final float width;
-	ArrayList<BoundedComponent> possible = new ArrayList<>();
-//	private Vector2 offset;
+	ArrayList<Collider> possible = new ArrayList<>();
 	private Collider[] triggers;
 	boolean isTrigger = false;
+
+	public enum CollisionLocation {
+		TOP,
+		RIGHT,
+		BOTTOM,
+		LEFT
+	}
 
 	public Collider(float width, float height) {
 		this(width, height, false);
@@ -25,6 +31,9 @@ public class Collider extends BoundedComponent {
 		this.isTrigger = isTrigger;
 	}
 
+	public static void init() {
+		qt.init(staticColliders.toArray(new Collider[staticColliders.size()]));
+	}
 
 	public void start() {
 		if (gameObject.isStatic || gameObject.name.equals("Door")) staticColliders.add(this);
@@ -78,26 +87,28 @@ public class Collider extends BoundedComponent {
 		if (possible.size() > 0) {
 			transform.position.y += y;
 			recalculateBounds();
-			for (BoundedComponent bc : possible) {
-				if (bc != this && bc != null && !isTrigger && RectF.intersects(bounds, bc.bounds)) {
-					if (y > 0 && bounds.bottom > bc.bounds.top) {
-						transform.position.y = Math.round(bc.bounds.top - bounds.height());
-						if (gameObject.name.equals("Player")) PlayerBase.gravity = 0;
-					} else if (y < 0 && bounds.top < bc.bounds.bottom) {
-						transform.position.y = Math.round(bc.bounds.bottom);
-						if (gameObject.name.equals("Player")) PlayerBase.gravity = 0;
+			for (Collider c : possible) {
+				if (c != this && c != null && !c.isTrigger && RectF.intersects(bounds, c.bounds)) {
+					if (y > 0 && bounds.bottom > c.bounds.top) {
+						transform.position.y = Math.round(c.bounds.top - bounds.height());
+//						if (gameObject.name.equals("Player")) PlayerBase.gravity = 0;
+						gameObject.onCollision(c, CollisionLocation.BOTTOM);
+					} else if (y < 0 && bounds.top < c.bounds.bottom) {
+						transform.position.y = Math.round(c.bounds.bottom);
+//						if (gameObject.name.equals("Player")) PlayerBase.gravity = 0;
+						gameObject.onCollision(c, CollisionLocation.TOP);
 					}
 					recalculateBounds();
 				}
 			}
 			transform.position.x += x;
 			recalculateBounds();
-			for (BoundedComponent bc : possible) {
-				if (bc != this && bc != null && !isTrigger && RectF.intersects(bounds, bc.bounds)) {
-					if (x > 0 && bounds.right > bc.bounds.left) {
-						transform.position.x = Math.round(bc.bounds.left - bounds.width());
-					} else if (x < 0 && bounds.left < bc.bounds.right) {
-						transform.position.x = Math.round(bc.bounds.right);
+			for (Collider c : possible) {
+				if (c != this && c != null && !c.isTrigger && RectF.intersects(bounds, c.bounds)) {
+					if (x > 0 && bounds.right > c.bounds.left) {
+						transform.position.x = Math.round(c.bounds.left - bounds.width());
+					} else if (x < 0 && bounds.left < c.bounds.right) {
+						transform.position.x = Math.round(c.bounds.right);
 					}
 					recalculateBounds();
 				}
@@ -123,25 +134,24 @@ public class Collider extends BoundedComponent {
 			QuadTree.retrieve(possible, qt, this);
 			for (BoundedComponent bc : possible) {
 				if (RectF.intersects(bounds, bc.bounds)) {
-//					gameObject.onTriggerEnter((Collider) bc);
+					gameObject.onTriggerEnter((Collider) bc);
 				}
 			}
 			for (Collider c : normalColliders) {
 				if (c != this && RectF.intersects(bounds, c.bounds)) {
-//					gameObject.onTriggerEnter(c);
+					gameObject.onTriggerEnter(c);
 				}
 			}
 			for (Collider c : triggerColliders.toArray(triggers)) {
-//				for (Collider c : triggerColliders) {
 				if (c != this && c != null && RectF.intersects(bounds, c.bounds)) {
-//					c.gameObject.onTriggerEnter(this);
-//					gameObject.onTriggerEnter(c);
+					c.gameObject.onTriggerEnter(this);
+					gameObject.onTriggerEnter(c);
 				}
 			}
 		} else {
 			for (Collider c : triggerColliders) {
 				if (c != this && RectF.intersects(bounds, c.bounds)) {
-//					c.gameObject.onTriggerEnter(this);
+					c.gameObject.onTriggerEnter(this);
 				}
 			}
 		}

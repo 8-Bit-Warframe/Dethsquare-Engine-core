@@ -1,5 +1,7 @@
 package com.ezardlabs.dethsquare;
 
+import com.ezardlabs.dethsquare.Collider.CollisionLocation;
+
 import java.util.ArrayList;
 
 /**
@@ -139,6 +141,12 @@ public class GameObject {
 		}
 	}
 
+	void onCollision(Collider other, CollisionLocation collisionLocation) {
+		for (Component component : components) {
+			component.onCollision(other, collisionLocation);
+		}
+	}
+
 	public static GameObject instantiate(GameObject gameObject, Vector2 position) {
 		gameObject.transform.position.set(position.x, position.y);
 		newObjects.add(gameObject);
@@ -146,7 +154,8 @@ public class GameObject {
 	}
 
 	public static void startAll() {
-		updateAll();
+		objects.addAll(newObjects);
+		newObjects.clear();
 		for (GameObject gameObject : objects) {
 			for (Component component : gameObject.components) {
 				component.start();
