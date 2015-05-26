@@ -105,7 +105,7 @@ public class Renderer extends BoundedComponent {
 				setupRenderData(visible);
 
 				Utils.render(visibleArray[i].textureName, vertexBuffer, uvBuffer, indices,
-						drawListBuffer);
+						indexBuffer);
 
 				drawCalls++;
 			}
@@ -117,7 +117,7 @@ public class Renderer extends BoundedComponent {
 	private static float[] uvs;
 	private static ArrayList<Renderer> visible = new ArrayList<>();
 	private static FloatBuffer vertexBuffer;
-	private static ShortBuffer drawListBuffer;
+	private static ShortBuffer indexBuffer;
 	private static FloatBuffer uvBuffer;
 
 	private static void setupRenderData(ArrayList<Renderer> renderers) {
@@ -224,9 +224,9 @@ public class Renderer extends BoundedComponent {
 		// initialize byte buffer for the draw list
 		ByteBuffer dlb = ByteBuffer.allocateDirect(indices.length * 2);
 		dlb.order(ByteOrder.nativeOrder());
-		drawListBuffer = dlb.asShortBuffer();
-		drawListBuffer.put(indices);
-		drawListBuffer.position(0);
+		indexBuffer = dlb.asShortBuffer();
+		indexBuffer.put(indices);
+		indexBuffer.position(0);
 
 		ByteBuffer uvb = ByteBuffer.allocateDirect(uvs.length * 4);
 		uvb.order(ByteOrder.nativeOrder());
