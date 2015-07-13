@@ -2,7 +2,7 @@ package com.ezardlabs.dethsquare;
 
 import java.util.ArrayList;
 
-public class Collider extends BoundedComponent {
+public final class Collider extends BoundedComponent {
 	public static final ArrayList<Collider> normalColliders = new ArrayList<>();
 	public static final ArrayList<Collider> staticColliders = new ArrayList<>();
 	public static final ArrayList<Collider> triggerColliders = new ArrayList<>();
@@ -19,6 +19,16 @@ public class Collider extends BoundedComponent {
 		RIGHT,
 		BOTTOM,
 		LEFT
+	}
+
+	public class Collision {
+		public CollisionLocation location;
+		public float speed;
+
+		public Collision(CollisionLocation location, float speed) {
+			this.location = location;
+			this.speed = speed;
+		}
 	}
 
 	public Collider(float width, float height) {
@@ -91,12 +101,12 @@ public class Collider extends BoundedComponent {
 				if (c != this && c != null && !c.isTrigger && RectF.intersects(bounds, c.bounds)) {
 					if (y > 0 && bounds.bottom > c.bounds.top) {
 						transform.position.y = Math.round(c.bounds.top - bounds.height());
-//						if (gameObject.name.equals("Player")) PlayerBase.gravity = 0;
-						gameObject.onCollision(c, CollisionLocation.BOTTOM);
+						gameObject.onCollision(c, new Collision(CollisionLocation.BOTTOM, y));
+						gameObject.rigidbody.gravity = 0;
 					} else if (y < 0 && bounds.top < c.bounds.bottom) {
 						transform.position.y = Math.round(c.bounds.bottom);
-//						if (gameObject.name.equals("Player")) PlayerBase.gravity = 0;
-						gameObject.onCollision(c, CollisionLocation.TOP);
+						gameObject.onCollision(c, new Collision(CollisionLocation.TOP, y));
+						gameObject.rigidbody.gravity = 0;
 					}
 					recalculateBounds();
 				}
@@ -107,8 +117,10 @@ public class Collider extends BoundedComponent {
 				if (c != this && c != null && !c.isTrigger && RectF.intersects(bounds, c.bounds)) {
 					if (x > 0 && bounds.right > c.bounds.left) {
 						transform.position.x = Math.round(c.bounds.left - bounds.width());
+						gameObject.onCollision(c, new Collision(CollisionLocation.RIGHT, x));
 					} else if (x < 0 && bounds.left < c.bounds.right) {
 						transform.position.x = Math.round(c.bounds.right);
+						gameObject.onCollision(c, new Collision(CollisionLocation.LEFT, x));
 					}
 					recalculateBounds();
 				}

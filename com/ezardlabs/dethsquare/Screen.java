@@ -1,6 +1,6 @@
 package com.ezardlabs.dethsquare;
 
-public class Screen {
+public final class Screen {
 	/**
 	 * The current width of the screen
 	 */

@@ -1,6 +1,8 @@
 package com.ezardlabs.dethsquare;
 
-public class Animator extends Script {
+import android.util.Log;
+
+public final class Animator extends Script {
 	private Animation[] animations;
 	private int index = -1;
 	private int frame = 0;
@@ -12,7 +14,12 @@ public class Animator extends Script {
 		this.animations = animations;
 	}
 
+	public void setAnimations(Animation... animations) {
+		this.animations = animations;
+	}
+
 	public void update() {
+		int startFrame = frame;
 		if (index == -1) return;
 		if (System.currentTimeMillis() >= nextFrameTime) {
 			nextFrameTime += animations[index].frameDuration;
@@ -41,7 +48,10 @@ public class Animator extends Script {
 					}
 					break;
 			}
-			getComponent(Renderer.class).sprite = animations[index].frames[frame];
+			gameObject.renderer.sprite = animations[index].frames[frame];
+		}
+		if (frame != startFrame && animations[index].listener != null) {
+			animations[index].listener.onFrame(frame);
 		}
 	}
 
@@ -49,12 +59,14 @@ public class Animator extends Script {
 		if (index != -1 && animations[index].name.equals(animationName)) return;
 		for (int i = 0; i < animations.length; i++) {
 			if (i != index && animations[i].name.equals(animationName)) {
+				if (gameObject.name.equals("Kubrow")) Log.i("", "playing: " + animationName);
 				index = i;
 				frame = 0;
 				direction = 1;
 				nextFrameTime = System.currentTimeMillis() + animations[index].frameDuration;
 				onAnimationFinishedCalled = false;
-				getComponent(Renderer.class).sprite = animations[index].frames[frame];
+				gameObject.renderer.sprite = animations[index].frames[frame];
+				if (animations[index].listener != null) animations[index].listener.onAnimatedStarted(this);
 				break;
 			}
 		}

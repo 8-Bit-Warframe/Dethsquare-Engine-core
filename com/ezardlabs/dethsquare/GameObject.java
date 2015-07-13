@@ -1,13 +1,14 @@
 package com.ezardlabs.dethsquare;
 
-import com.ezardlabs.dethsquare.Collider.CollisionLocation;
+import com.ezardlabs.dethsquare.Collider.Collision;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Base class for all entities in the game world
  */
-public class GameObject {
+public final class GameObject {
 	/**
 	 * List of all {@link GameObject GameObjects} to be instantiated at the end of the current frame
 	 */
@@ -26,10 +27,14 @@ public class GameObject {
 	 */
 	private static ArrayList<Script> scripts = new ArrayList<>();
 
+	private static HashMap<String, ArrayList<GameObject>> tags = new HashMap<>();
+
 	/**
 	 * The name of the {@link GameObject}
 	 */
 	public String name;
+
+	private String tag;
 	/**
 	 * Whether or not the {@link GameObject} is static, i.e. whether or not it will ever move.
 	 * Static {@link GameObject GameObjects} can have their rendering and collision optimised
@@ -44,9 +49,21 @@ public class GameObject {
 	 */
 	public Transform transform;
 	/**
+	 * Fast access to this {@link GameObject}'s {@link Animator} component
+	 */
+	public Animator animator;
+	/**
+	 * Fast access to this {@link GameObject}'s {@link Renderer} component
+	 */
+	public Renderer renderer;
+	/**
 	 * Fast access to this {@link GameObject}'s {@link Collider} component
 	 */
 	public Collider collider;
+	/**
+	 * Fast access to this {@link GameObject}'s {@link Rigidbody} component
+	 */
+	public Rigidbody rigidbody;
 
 	public GameObject() {
 		this(null);
@@ -88,10 +105,17 @@ public class GameObject {
 		components.add(component);
 		if (component instanceof Script) {
 			scripts.add((Script) component);
-		} else if (component instanceof Transform) {
+		}
+		if (component instanceof Transform) {
 			transform = (Transform) component;
+		} else if (component instanceof Renderer) {
+			renderer = (Renderer) component;
+		} else if (component instanceof Animator) {
+			animator = (Animator) component;
 		} else if (component instanceof Collider) {
 			collider = (Collider) component;
+		} else if (component instanceof Rigidbody) {
+			rigidbody = (Rigidbody) component;
 		}
 		return component;
 	}
@@ -128,11 +152,50 @@ public class GameObject {
 				if (c instanceof Script) {
 					scripts.remove(c);
 				}
+				if (c instanceof Transform) {
+					transform = null;
+				} else if (c instanceof Renderer) {
+					renderer = null;
+				} else if (c instanceof Animator) {
+					animator = null;
+				} else if (c instanceof Collider) {
+					collider = null;
+				} else if (c instanceof Rigidbody) {
+					rigidbody = null;
+				}
 				components.remove(c);
 				break;
 			}
 		}
 		return null;
+	}
+
+	public void setTag(String tag) {
+		if (tag == null) {
+			if (this.tag != null) {
+				tags.get(this.tag).remove(this);
+				if (tags.get(this.tag).size() == 0) {
+					tags.remove(this.tag);
+				}
+			}
+		} else {
+			if (this.tag == null) {
+				if (!tags.containsKey(tag)) {
+					tags.put(tag, new ArrayList<GameObject>());
+				}
+				tags.get(tag).add(this);
+			} else {
+				tags.get(this.tag).remove(this);
+				if (tags.get(this.tag).size() == 0) {
+					tags.remove(this.tag);
+				}
+				if (!tags.containsKey(tag)) {
+					tags.put(tag, new ArrayList<GameObject>());
+				}
+				tags.get(tag).add(this);
+			}
+		}
+		this.tag = tag;
 	}
 
 	void onTriggerEnter(Collider collider) {
@@ -141,9 +204,9 @@ public class GameObject {
 		}
 	}
 
-	void onCollision(Collider other, CollisionLocation collisionLocation) {
+	void onCollision(Collider other, Collision collision) {
 		for (Component component : components) {
-			component.onCollision(other, collisionLocation);
+			component.onCollision(other, collision);
 		}
 	}
 
@@ -151,6 +214,23 @@ public class GameObject {
 		gameObject.transform.position.set(position.x, position.y);
 		newObjects.add(gameObject);
 		return gameObject;
+	}
+
+	public static void destroy(GameObject gameObject) {
+		destroyedObjects.add(gameObject);
+	}
+
+	public static void destroy(final GameObject gameObject, final long delay) {
+		new Thread() {
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(delay);
+				} catch (InterruptedException ignored) {
+				}
+				destroyedObjects.add(gameObject);
+			}
+		}.start();
 	}
 
 	public static void startAll() {
@@ -164,10 +244,30 @@ public class GameObject {
 	}
 
 	public static void updateAll() {
+		for (GameObject gameObject : destroyedObjects) {
+			for (Component c : gameObject.components) {
+				c.destroy();
+			}
+		}
+		objects.removeAll(destroyedObjects);
+		destroyedObjects.clear();
+		for (GameObject gameObject : newObjects) {
+			for (Component c : gameObject.components) {
+				c.start();
+			}
+		}
 		objects.addAll(newObjects);
 		newObjects.clear();
 		for (Script s : scripts) {
 			s.update();
+		}
+	}
+
+	public static GameObject[] findAllWithTag(String tag) {
+		if (tags.containsKey(tag)) {
+			return tags.get(tag).toArray(new GameObject[tags.get(tag).size()]);
+		} else {
+			return new GameObject[0];
 		}
 	}
 }

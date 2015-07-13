@@ -1,6 +1,6 @@
 package com.ezardlabs.dethsquare;
 
-import com.ezardlabs.dethsquare.Collider.CollisionLocation;
+import com.ezardlabs.dethsquare.Collider.Collision;
 
 /**
  * Base class for everything attached to {@link GameObject GameObjects}
@@ -17,16 +17,15 @@ public class Component {
 	 */
 	public Transform transform;
 
+	protected void destroy() {
+	}
+
 	public void start() {
 	}
 
 	public void onTriggerEnter(Collider other) {
 	}
 
-	public void onCollision(Collider other, CollisionLocation collisionLocation) {
-	}
-
-	public <T extends Component> T getComponent(Class<T> type) {
-		return gameObject.getComponent(type);
+	public void onCollision(Collider other, Collision collision) {
 	}
 }

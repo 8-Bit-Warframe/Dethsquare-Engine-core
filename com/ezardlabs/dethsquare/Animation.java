@@ -2,7 +2,7 @@ package com.ezardlabs.dethsquare;
 
 import com.ezardlabs.dethsquare.TextureAtlas.Sprite;
 
-public class Animation {
+public final class Animation {
 	String name;
 	Sprite[] frames;
 	AnimationType type;
@@ -29,6 +29,10 @@ public class Animation {
 	}
 
 	public interface AnimationListener {
+		void onAnimatedStarted(Animator animator);
+
+		void onFrame(int frameNum);
+
 		void onAnimationFinished(Animator animator);
 	}
 }

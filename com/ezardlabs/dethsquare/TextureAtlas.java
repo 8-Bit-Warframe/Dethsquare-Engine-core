@@ -6,7 +6,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.HashMap;
 
-public class TextureAtlas {
+public final class TextureAtlas {
 	final String imagePath;
 	final String mapPath;
 	private final HashMap<String, Sprite> atlas = new HashMap<>();
@@ -18,7 +18,14 @@ public class TextureAtlas {
 		this.imagePath = imagePath;
 		this.mapPath = mapPath;
 
-		int[] data = Utils.loadImage(imagePath);
+		int[] data;
+		if (Renderer.textures.containsKey(imagePath)) {
+			data = Renderer.textures.get(imagePath);
+		} else {
+			data = Utils.loadImage(imagePath);
+			Renderer.textures.put(imagePath, data);
+		}
+
 		textureName = data[0];
 		width = data[1];
 		height = data[2];

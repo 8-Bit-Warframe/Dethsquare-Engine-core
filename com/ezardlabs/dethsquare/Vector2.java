@@ -3,7 +3,7 @@ package com.ezardlabs.dethsquare;
 /**
  * Representation of 2D vectors and points
  */
-public class Vector2 {
+public final class Vector2 {
 	public float x;
 	public float y;
 
@@ -39,5 +39,10 @@ public class Vector2 {
 
 	public static double distance(Vector2 vector, float x, float y) {
 		return Math.sqrt(Math.pow(x - vector.x, 2) + Math.pow(y - vector.y, 2));
+	}
+
+	@Override
+	public String toString() {
+		return "Vector2(" + x + ", " + y + ")";
 	}
 }

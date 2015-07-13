@@ -1,6 +1,6 @@
 package com.ezardlabs.dethsquare;
 
-public class Camera extends Script {
+public final class Camera extends Script {
 	public final RectF bounds = new RectF();
 	public static Camera main;
 

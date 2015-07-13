@@ -8,8 +8,11 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Renderer extends BoundedComponent {
+	static HashMap<String, int[]> textures = new HashMap<>();
+
 	private static QuadTree<Renderer> qt = new QuadTree<>(30);
 	private static ArrayList<Renderer> renderers = new ArrayList<>();
 
@@ -33,21 +36,23 @@ public class Renderer extends BoundedComponent {
 	}
 
 	public Renderer() {
-		renderers.add(this);
 	}
 
 	public Renderer(String imagePath, float width, float height) {
-		this();
 		mode = Mode.IMAGE;
-		textureName = Utils.loadImage(imagePath)[0];
+		if (textures.containsKey(imagePath)) {
+			textureName = textures.get(imagePath)[0];
+		} else {
+			int[] data = Utils.loadImage(imagePath);
+			textures.put(imagePath, data);
+		}
 		this.width = width;
 		this.height = height;
 	}
 
 	public Renderer(TextureAtlas textureAtlas, Sprite sprite, float width, float height) {
-		this();
-		mode = Mode.SPRITE;
 		textureName = textureAtlas.textureName;
+		mode = Mode.SPRITE;
 		this.sprite = sprite;
 		this.width = width;
 		this.height = height;
@@ -59,15 +64,30 @@ public class Renderer extends BoundedComponent {
 		return this;
 	}
 
-	public void setzIndex(int zIndex) {
+	public void setSize(int width, int height) {
+		this.width = width;
+		this.height = height;
+	}
+
+	public Renderer setzIndex(int zIndex) {
 		this.zIndex = zIndex;
+		return this;
+	}
+
+	@Override
+	public void start() {
+		renderers.add(this);
+	}
+
+	@Override
+	protected void destroy() {
+		renderers.remove(this);
 	}
 
 	public static void init() {
 		ArrayList<Renderer> staticRenderers = new ArrayList<>();
 		for (Renderer r : renderers.toArray(new Renderer[renderers.size()])) {
-			r.bounds.set(r.transform.position.x, r.transform.position.y,
-					r.transform.position.x + r.width, r.transform.position.y + r.height);
+			r.bounds.set(r.transform.position.x, r.transform.position.y, r.transform.position.x + r.width, r.transform.position.y + r.height);
 			if (r.gameObject.isStatic) {
 				staticRenderers.add(r);
 				renderers.remove(r);
@@ -104,12 +124,12 @@ public class Renderer extends BoundedComponent {
 
 				setupRenderData(visible);
 
-				Utils.render(visibleArray[i].textureName, vertexBuffer, uvBuffer, indices,
-						indexBuffer);
+				Utils.render(visibleArray[i].textureName, vertexBuffer, uvBuffer, indices, indexBuffer);
 
 				drawCalls++;
 			}
 		}
+//		Log.i("", "Draw calls: " + drawCalls);
 	}
 
 	private static float[] vertices;
@@ -129,20 +149,16 @@ public class Renderer extends BoundedComponent {
 		int last = 0;
 		for (Renderer r : renderers) {
 			vertices[(i * 12)] = (r.transform.position.x + r.offsetX) * Screen.scale;
-			vertices[(i * 12) + 1] =
-					(r.transform.position.y + r.offsetY) * Screen.scale + (r.height * Screen.scale);
+			vertices[(i * 12) + 1] = (r.transform.position.y + r.offsetY) * Screen.scale + (r.height * Screen.scale);
 			vertices[(i * 12) + 2] = r.zIndex;
 			vertices[(i * 12) + 3] = (r.transform.position.x + r.offsetX) * Screen.scale;
 			vertices[(i * 12) + 4] = (r.transform.position.y + r.offsetY) * Screen.scale;
 			vertices[(i * 12) + 5] = r.zIndex;
-			vertices[(i * 12) + 6] =
-					(r.transform.position.x + r.offsetX) * Screen.scale + (r.width * Screen.scale);
+			vertices[(i * 12) + 6] = (r.transform.position.x + r.offsetX) * Screen.scale + (r.width * Screen.scale);
 			vertices[(i * 12) + 7] = (r.transform.position.y + r.offsetY) * Screen.scale;
 			vertices[(i * 12) + 8] = r.zIndex;
-			vertices[(i * 12) + 9] =
-					(r.transform.position.x + r.offsetX) * Screen.scale + (r.width * Screen.scale);
-			vertices[(i * 12) + 10] =
-					(r.transform.position.y + r.offsetY) * Screen.scale + (r.height * Screen.scale);
+			vertices[(i * 12) + 9] = (r.transform.position.x + r.offsetX) * Screen.scale + (r.width * Screen.scale);
+			vertices[(i * 12) + 10] = (r.transform.position.y + r.offsetY) * Screen.scale + (r.height * Screen.scale);
 			vertices[(i * 12) + 11] = r.zIndex;
 
 			indices[(i * 6)] = (short) (last);
