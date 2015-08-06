@@ -16,5 +16,9 @@ public class Input {
 		void onTouchMove(int id, float x, float y);
 
 		void onTouchUp(int id, float x, float y);
+
+		void onTouchCancel(int id);
+
+		void onTouchOutside(int id);
 	}
 }

@@ -49,6 +49,7 @@ public final class Collider extends BoundedComponent {
 		if (gameObject.isStatic || gameObject.name.equals("Door")) staticColliders.add(this);
 		if (isTrigger) addTrigger();
 		if (!gameObject.isStatic && !isTrigger) normalColliders.add(this);
+		if (gameObject.isStatic && !isTrigger) gameObject.setTag("solid");
 		recalculateBounds();
 	}
 
@@ -97,7 +98,9 @@ public final class Collider extends BoundedComponent {
 		if (possible.size() > 0) {
 			transform.position.y += y;
 			recalculateBounds();
-			for (Collider c : possible) {
+			Collider c;
+			for (int i = 0; i < possible.size(); i++) {
+				c = possible.get(i);
 				if (c != this && c != null && !c.isTrigger && RectF.intersects(bounds, c.bounds)) {
 					if (y > 0 && bounds.bottom > c.bounds.top) {
 						transform.position.y = Math.round(c.bounds.top - bounds.height());
@@ -113,7 +116,8 @@ public final class Collider extends BoundedComponent {
 			}
 			transform.position.x += x;
 			recalculateBounds();
-			for (Collider c : possible) {
+			for (int i = 0; i < possible.size(); i++) {
+				c = possible.get(i);
 				if (c != this && c != null && !c.isTrigger && RectF.intersects(bounds, c.bounds)) {
 					if (x > 0 && bounds.right > c.bounds.left) {
 						transform.position.x = Math.round(c.bounds.left - bounds.width());

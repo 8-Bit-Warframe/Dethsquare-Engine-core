@@ -1,7 +1,5 @@
 package com.ezardlabs.dethsquare;
 
-import android.util.Log;
-
 public final class Animator extends Script {
 	private Animation[] animations;
 	private int index = -1;
@@ -59,7 +57,6 @@ public final class Animator extends Script {
 		if (index != -1 && animations[index].name.equals(animationName)) return;
 		for (int i = 0; i < animations.length; i++) {
 			if (i != index && animations[i].name.equals(animationName)) {
-				if (gameObject.name.equals("Kubrow")) Log.i("", "playing: " + animationName);
 				index = i;
 				frame = 0;
 				direction = 1;

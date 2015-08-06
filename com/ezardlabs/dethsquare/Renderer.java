@@ -8,6 +8,7 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 public class Renderer extends BoundedComponent {
@@ -15,6 +16,7 @@ public class Renderer extends BoundedComponent {
 
 	private static QuadTree<Renderer> qt = new QuadTree<>(30);
 	private static ArrayList<Renderer> renderers = new ArrayList<>();
+	protected static ArrayList<Renderer> guiRenderers = new ArrayList<>();
 
 	Sprite sprite;
 	public float width;
@@ -23,11 +25,10 @@ public class Renderer extends BoundedComponent {
 	public boolean hFlipped = false;
 	public boolean vFlipped = false;
 
+	protected boolean isGUI = false;
+
 	public int textureName = -1;
 	public Mode mode = Mode.NONE;
-
-	public int offsetX = 0;
-	public int offsetY = 0;
 
 	public enum Mode {
 		NONE,
@@ -39,23 +40,12 @@ public class Renderer extends BoundedComponent {
 	}
 
 	public Renderer(String imagePath, float width, float height) {
-		mode = Mode.IMAGE;
-		if (textures.containsKey(imagePath)) {
-			textureName = textures.get(imagePath)[0];
-		} else {
-			int[] data = Utils.loadImage(imagePath);
-			textures.put(imagePath, data);
-		}
-		this.width = width;
-		this.height = height;
+		setImage(imagePath, width, height);
 	}
 
 	public Renderer(TextureAtlas textureAtlas, Sprite sprite, float width, float height) {
-		textureName = textureAtlas.textureName;
-		mode = Mode.SPRITE;
+		setTextureAtlas(textureAtlas, width, height);
 		this.sprite = sprite;
-		this.width = width;
-		this.height = height;
 	}
 
 	public Renderer setFlipped(boolean hFlipped, boolean vFlipped) {
@@ -64,9 +54,29 @@ public class Renderer extends BoundedComponent {
 		return this;
 	}
 
+	public void setImage(String imagePath, float width, float height) {
+		mode = Mode.IMAGE;
+		if (textures.containsKey(imagePath)) {
+			textureName = textures.get(imagePath)[0];
+		} else {
+			int[] data = Utils.loadImage(imagePath);
+			textures.put(imagePath, data);
+			textureName = data[0];
+		}
+		this.width = width;
+		this.height = height;
+	}
+
 	public void setSize(int width, int height) {
 		this.width = width;
 		this.height = height;
+	}
+
+	public void setTextureAtlas(TextureAtlas textureAtlas, float spriteWidth, float spriteHeight) {
+		textureName = textureAtlas.textureName;
+		mode = Mode.SPRITE;
+		width = spriteWidth;
+		height = spriteHeight;
 	}
 
 	public Renderer setzIndex(int zIndex) {
@@ -96,9 +106,10 @@ public class Renderer extends BoundedComponent {
 		qt.init(staticRenderers.toArray(new Renderer[staticRenderers.size()]));
 	}
 
-	private static ArrayList<Integer> idsRenderered = new ArrayList<>();
-	private static Renderer[] visibleArray;
+	private static ArrayList<Integer> idsRendered = new ArrayList<>();
 	private static int drawCalls = 0;
+
+	static HashMap<Integer, ArrayList<Renderer>> map = new HashMap<>();
 
 	public static void renderAll() {
 		drawCalls = 0;
@@ -106,27 +117,38 @@ public class Renderer extends BoundedComponent {
 		qt.getVisibleObjects(visible, qt, Camera.main);
 
 		visible.addAll(renderers); // TODO only add renderers that are visible
+		map.clear();
+		for (int i = 0; i < visible.size(); i++) {
+			if (map.size() == 0 || !map.containsKey(visible.get(i).zIndex)) {
+				map.put(visible.get(i).zIndex, new ArrayList<Renderer>());
+			}
+			map.get(visible.get(i).zIndex).add(visible.get(i));
+		}
 
-		visibleArray = visible.toArray(new Renderer[visible.size()]);
-		idsRenderered.clear();
+		ArrayList<Integer> zIndices = new ArrayList<>(map.keySet());
+		Collections.sort(zIndices);
 
-		for (int i = 0; i < visibleArray.length; i++) {
-			if (!idsRenderered.contains(visibleArray[i].textureName)) {
-				idsRenderered.add(visibleArray[i].textureName);
+		for (int zIndex = 0; zIndex < zIndices.size(); zIndex++) {
+			idsRendered.clear();
+			ArrayList<Renderer> temp = map.get(zIndices.get(zIndex));
+			for (int i = 0; i < temp.size(); i++) {
+				if (!idsRendered.contains(temp.get(i).textureName)) {
+					idsRendered.add(temp.get(i).textureName);
 
-				visible.clear();
+					visible.clear();
 
-				for (int j = i; j < visibleArray.length; j++) {
-					if (visibleArray[j].textureName == visibleArray[i].textureName) {
-						visible.add(visibleArray[j]);
+					for (int j = i; j < temp.size(); j++) {
+						if (temp.get(j).textureName == temp.get(i).textureName) {
+							visible.add(temp.get(j));
+						}
 					}
+
+					setupRenderData(visible);
+
+					Utils.render(temp.get(i).textureName, vertexBuffer, uvBuffer, indices, indexBuffer);
+
+					drawCalls++;
 				}
-
-				setupRenderData(visible);
-
-				Utils.render(visibleArray[i].textureName, vertexBuffer, uvBuffer, indices, indexBuffer);
-
-				drawCalls++;
 			}
 		}
 //		Log.i("", "Draw calls: " + drawCalls);
@@ -148,18 +170,18 @@ public class Renderer extends BoundedComponent {
 		int i = 0;
 		int last = 0;
 		for (Renderer r : renderers) {
-			vertices[(i * 12)] = (r.transform.position.x + r.offsetX) * Screen.scale;
-			vertices[(i * 12) + 1] = (r.transform.position.y + r.offsetY) * Screen.scale + (r.height * Screen.scale);
-			vertices[(i * 12) + 2] = r.zIndex;
-			vertices[(i * 12) + 3] = (r.transform.position.x + r.offsetX) * Screen.scale;
-			vertices[(i * 12) + 4] = (r.transform.position.y + r.offsetY) * Screen.scale;
-			vertices[(i * 12) + 5] = r.zIndex;
-			vertices[(i * 12) + 6] = (r.transform.position.x + r.offsetX) * Screen.scale + (r.width * Screen.scale);
-			vertices[(i * 12) + 7] = (r.transform.position.y + r.offsetY) * Screen.scale;
-			vertices[(i * 12) + 8] = r.zIndex;
-			vertices[(i * 12) + 9] = (r.transform.position.x + r.offsetX) * Screen.scale + (r.width * Screen.scale);
-			vertices[(i * 12) + 10] = (r.transform.position.y + r.offsetY) * Screen.scale + (r.height * Screen.scale);
-			vertices[(i * 12) + 11] = r.zIndex;
+			vertices[(i * 12)] = r.transform.position.x * Screen.scale;
+			vertices[(i * 12) + 1] = r.transform.position.y * Screen.scale + (r.height * Screen.scale);
+			vertices[(i * 12) + 2] = 0;
+			vertices[(i * 12) + 3] = r.transform.position.x * Screen.scale;
+			vertices[(i * 12) + 4] = r.transform.position.y * Screen.scale;
+			vertices[(i * 12) + 5] = 0;
+			vertices[(i * 12) + 6] = r.transform.position.x * Screen.scale + (r.width * Screen.scale);
+			vertices[(i * 12) + 7] = r.transform.position.y * Screen.scale;
+			vertices[(i * 12) + 8] = 0;
+			vertices[(i * 12) + 9] = r.transform.position.x * Screen.scale + (r.width * Screen.scale);
+			vertices[(i * 12) + 10] = r.transform.position.y * Screen.scale + (r.height * Screen.scale);
+			vertices[(i * 12) + 11] = 0;
 
 			indices[(i * 6)] = (short) (last);
 			indices[(i * 6) + 1] = (short) (last + 1);

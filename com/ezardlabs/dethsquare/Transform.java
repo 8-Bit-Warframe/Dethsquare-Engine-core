@@ -8,6 +8,7 @@ public final class Transform extends Component {
 
 	/**
 	 * Move the {@link GameObject} that this {@link Transform} is attached to. If the {@link GameObject} has a {@link Collider} attached, then the physics
+	 *
 	 * @param x
 	 * @param y
 	 */

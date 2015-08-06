@@ -33,6 +33,16 @@ public final class Vector2 {
 		this.y = y;
 	}
 
+	/**
+	 * Returns a new {@link Vector2} that has been offset by the given parameters
+	 * @param x The amount to offset the x coordinate by
+	 * @param y The amount to offset the y coordinate by
+	 * @return The offset {@link Vector2}
+	 */
+	public Vector2 offset(float x, float y) {
+		return new Vector2(this.x + x, this.y + y);
+	}
+
 	public static double distance(Vector2 a, Vector2 b) {
 		return Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2));
 	}
