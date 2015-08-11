@@ -16,6 +16,13 @@ public final class Animator extends Script {
 		this.animations = animations;
 	}
 
+	public void addAnimations(Animation... animations) {
+		Animation[] newAnimations = new Animation[this.animations.length + animations.length];
+		System.arraycopy(this.animations, 0, newAnimations, 0, this.animations.length);
+		System.arraycopy(animations, 0, newAnimations, this.animations.length, animations.length);
+		this.animations = newAnimations;
+	}
+
 	public void update() {
 		int startFrame = frame;
 		if (index == -1) return;
@@ -63,7 +70,8 @@ public final class Animator extends Script {
 				nextFrameTime = System.currentTimeMillis() + animations[index].frameDuration;
 				onAnimationFinishedCalled = false;
 				gameObject.renderer.sprite = animations[index].frames[frame];
-				if (animations[index].listener != null) animations[index].listener.onAnimatedStarted(this);
+				if (animations[index].listener != null)
+					animations[index].listener.onAnimatedStarted(this);
 				break;
 			}
 		}
