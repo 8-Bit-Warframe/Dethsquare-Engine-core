@@ -29,6 +29,8 @@ public class Renderer extends BoundedComponent {
 
 	public int textureName = -1;
 	public Mode mode = Mode.NONE;
+	private int xOffset;
+	private int yOffset;
 
 	public enum Mode {
 		NONE,
@@ -70,6 +72,11 @@ public class Renderer extends BoundedComponent {
 	public void setSize(int width, int height) {
 		this.width = width;
 		this.height = height;
+	}
+
+	public void setOffsets(int xOffset, int yOffset) {
+		this.xOffset = xOffset;
+		this.yOffset = yOffset;
 	}
 
 	public void setTextureAtlas(TextureAtlas textureAtlas, float spriteWidth, float spriteHeight) {
@@ -170,18 +177,24 @@ public class Renderer extends BoundedComponent {
 		int i = 0;
 		int last = 0;
 		for (Renderer r : renderers) {
-			vertices[(i * 12)] = r.transform.position.x * Screen.scale;
-			vertices[(i * 12) + 1] = r.transform.position.y * Screen.scale + (r.height * Screen.scale);
-			vertices[(i * 12) + 2] = 0;
-			vertices[(i * 12) + 3] = r.transform.position.x * Screen.scale;
-			vertices[(i * 12) + 4] = r.transform.position.y * Screen.scale;
-			vertices[(i * 12) + 5] = 0;
-			vertices[(i * 12) + 6] = r.transform.position.x * Screen.scale + (r.width * Screen.scale);
-			vertices[(i * 12) + 7] = r.transform.position.y * Screen.scale;
-			vertices[(i * 12) + 8] = 0;
-			vertices[(i * 12) + 9] = r.transform.position.x * Screen.scale + (r.width * Screen.scale);
-			vertices[(i * 12) + 10] = r.transform.position.y * Screen.scale + (r.height * Screen.scale);
-			vertices[(i * 12) + 11] = 0;
+//			vertices[(i * 12)] = r.transform.position.x * Screen.scale;
+//			vertices[(i * 12) + 1] = r.transform.position.y * Screen.scale + (r.height * Screen.scale);
+//			vertices[(i * 12) + 2] = 0;
+//			vertices[(i * 12) + 3] = r.transform.position.x * Screen.scale;
+//			vertices[(i * 12) + 4] = r.transform.position.y * Screen.scale;
+//			vertices[(i * 12) + 5] = 0;
+//			vertices[(i * 12) + 6] = r.transform.position.x * Screen.scale + (r.width * Screen.scale);
+//			vertices[(i * 12) + 7] = r.transform.position.y * Screen.scale;
+//			vertices[(i * 12) + 8] = 0;
+//			vertices[(i * 12) + 9] = r.transform.position.x * Screen.scale + (r.width * Screen.scale);
+//			vertices[(i * 12) + 10] = r.transform.position.y * Screen.scale + (r.height * Screen.scale);
+//			vertices[(i * 12) + 11] = 0;
+
+			vertices[(i * 12)] = vertices[(i * 12) + 3] = (r.transform.position.x + r.xOffset) * Screen.scale;
+			vertices[(i * 12) + 1] = vertices[(i * 12) + 10] = (r.transform.position.y + r.yOffset) * Screen.scale + (r.height * Screen.scale);
+			vertices[(i * 12) + 2] = vertices[(i * 12) + 5] = vertices[(i * 12) + 8] = vertices[(i * 12) + 11] = 0;
+			vertices[(i * 12) + 4] = vertices[(i * 12) + 7] = (r.transform.position.y + r.yOffset) * Screen.scale;
+			vertices[(i * 12) + 6] = vertices[(i * 12) + 9] = (r.transform.position.x + r.xOffset) * Screen.scale + (r.width * Screen.scale);
 
 			indices[(i * 6)] = (short) (last);
 			indices[(i * 6) + 1] = (short) (last + 1);
