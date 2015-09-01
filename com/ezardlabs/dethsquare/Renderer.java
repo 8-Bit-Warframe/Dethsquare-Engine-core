@@ -16,7 +16,6 @@ public class Renderer extends BoundedComponent {
 
 	private static QuadTree<Renderer> qt = new QuadTree<>(30);
 	private static ArrayList<Renderer> renderers = new ArrayList<>();
-	protected static ArrayList<Renderer> guiRenderers = new ArrayList<>();
 
 	Sprite sprite;
 	public float width;
@@ -24,8 +23,6 @@ public class Renderer extends BoundedComponent {
 	private int zIndex = 0;
 	public boolean hFlipped = false;
 	public boolean vFlipped = false;
-
-	protected boolean isGUI = false;
 
 	public int textureName = -1;
 	public Mode mode = Mode.NONE;
@@ -91,6 +88,18 @@ public class Renderer extends BoundedComponent {
 		return this;
 	}
 
+	protected float getXPos() {
+		return transform.position.x + xOffset;
+	}
+
+	protected float getYPos() {
+		return transform.position.y + yOffset;
+	}
+
+	protected int getZIndex() {
+		return zIndex;
+	}
+
 	@Override
 	public void start() {
 		renderers.add(this);
@@ -126,10 +135,10 @@ public class Renderer extends BoundedComponent {
 		visible.addAll(renderers); // TODO only add renderers that are visible
 		map.clear();
 		for (int i = 0; i < visible.size(); i++) {
-			if (map.size() == 0 || !map.containsKey(visible.get(i).zIndex)) {
-				map.put(visible.get(i).zIndex, new ArrayList<Renderer>());
+			if (map.size() == 0 || !map.containsKey(visible.get(i).getZIndex())) {
+				map.put(visible.get(i).getZIndex(), new ArrayList<Renderer>());
 			}
-			map.get(visible.get(i).zIndex).add(visible.get(i));
+			map.get(visible.get(i).getZIndex()).add(visible.get(i));
 		}
 
 		ArrayList<Integer> zIndices = new ArrayList<>(map.keySet());
@@ -190,17 +199,22 @@ public class Renderer extends BoundedComponent {
 //			vertices[(i * 12) + 10] = r.transform.position.y * Screen.scale + (r.height * Screen.scale);
 //			vertices[(i * 12) + 11] = 0;
 
-			vertices[(i * 12)] = vertices[(i * 12) + 3] = (r.transform.position.x + r.xOffset) * Screen.scale;
-			vertices[(i * 12) + 1] = vertices[(i * 12) + 10] = (r.transform.position.y + r.yOffset) * Screen.scale + (r.height * Screen.scale);
+			vertices[(i * 12)] = vertices[(i * 12) + 3] = r.getXPos() * Screen.scale;
+			vertices[(i * 12) + 1] = vertices[(i * 12) + 10] = r.getYPos() * Screen.scale + (r.height * Screen.scale);
 			vertices[(i * 12) + 2] = vertices[(i * 12) + 5] = vertices[(i * 12) + 8] = vertices[(i * 12) + 11] = 0;
-			vertices[(i * 12) + 4] = vertices[(i * 12) + 7] = (r.transform.position.y + r.yOffset) * Screen.scale;
-			vertices[(i * 12) + 6] = vertices[(i * 12) + 9] = (r.transform.position.x + r.xOffset) * Screen.scale + (r.width * Screen.scale);
+			vertices[(i * 12) + 4] = vertices[(i * 12) + 7] = r.getYPos() * Screen.scale;
+			vertices[(i * 12) + 6] = vertices[(i * 12) + 9] = r.getXPos() * Screen.scale + (r.width * Screen.scale);
 
-			indices[(i * 6)] = (short) (last);
+//			indices[(i * 6)] = (short) (last);
+//			indices[(i * 6) + 1] = (short) (last + 1);
+//			indices[(i * 6) + 2] = (short) (last + 2);
+//			indices[(i * 6) + 3] = (short) (last);
+//			indices[(i * 6) + 4] = (short) (last + 2);
+//			indices[(i * 6) + 5] = (short) (last + 3);
+
+			indices[(i * 6)] = indices[(i * 6) + 3] = (short) (last);
 			indices[(i * 6) + 1] = (short) (last + 1);
-			indices[(i * 6) + 2] = (short) (last + 2);
-			indices[(i * 6) + 3] = (short) (last);
-			indices[(i * 6) + 4] = (short) (last + 2);
+			indices[(i * 6) + 2] = indices[(i * 6) + 4] = (short) (last + 2);
 			indices[(i * 6) + 5] = (short) (last + 3);
 			last = last + 4;
 
