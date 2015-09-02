@@ -76,6 +76,10 @@ public class Renderer extends BoundedComponent {
 		this.yOffset = yOffset;
 	}
 
+	public void setSprite(Sprite sprite) {
+		this.sprite = sprite;
+	}
+
 	public void setTextureAtlas(TextureAtlas textureAtlas, float spriteWidth, float spriteHeight) {
 		textureName = textureAtlas.textureName;
 		mode = Mode.SPRITE;
