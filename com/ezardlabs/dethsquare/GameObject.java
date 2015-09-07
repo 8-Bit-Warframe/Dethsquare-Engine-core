@@ -26,9 +26,13 @@ public final class GameObject {
 	 * game world
 	 */
 	private static final ArrayList<Script> scripts = new ArrayList<>();
-
+    /**
+     * Structure containing all tags currently in use in the game world
+     */
 	private static final HashMap<String, ArrayList<GameObject>> tags = new HashMap<>();
-
+    /**
+     * List of all {@link GameObject GameObjects} whose components have been modified in some way since last frame
+     */
 	private static final ArrayList<GameObject> objectsWithChangedComponents = new ArrayList<>();
 
 	private static boolean startAllCalled = false;
@@ -36,7 +40,9 @@ public final class GameObject {
 	 * The name of the {@link GameObject}
 	 */
 	public String name;
-
+    /**
+     * The tag of this {@link GameObject}. Tags are used to define generic groups of {@link GameObject GameObjects} (e.g. players, enemies, etc)
+     */
 	private String tag;
 
 	private boolean initialised = false;
@@ -46,11 +52,16 @@ public final class GameObject {
 	 */
 	public final boolean isStatic;
 	/**
-	 * List of {@link Component Components} currently attached to this object
+	 * List of {@link Component Components} currently attached to this {@link GameObject}
 	 */
 	private final ArrayList<Component> components = new ArrayList<>();
-
+    /**
+     * List of {@link Component Components} that have been added to this {@link GameObject} since last frame
+     */
 	private final ArrayList<Component> newComponents = new ArrayList<>();
+    /**
+     * List of {@link Component Components} that have been removed from this {@link GameObject} since last frame
+     */
 	private final ArrayList<Class<?>> removedComponents = new ArrayList<>();
 	/**
 	 * Fast access to this {@link GameObject}'s {@link Transform} component
@@ -148,6 +159,12 @@ public final class GameObject {
 		return null;
 	}
 
+    /**
+     * Gets the first {@link Component} of the given type
+     * @param type The type of the {@link Component} to get
+     * @param <T> The type to automatically cast the result to
+     * @return The first {@link Component} of the given type
+     */
 	public <T extends Component> Component getComponentOfType(Class<T> type) {
 		for (Component c : components) {
 			if (type.isAssignableFrom(c.getClass())) {
@@ -195,6 +212,10 @@ public final class GameObject {
 		return null;
 	}
 
+    /**
+     * Sets the tag of this {@link GameObject}
+     * @param tag The tag to give to this {@link GameObject}
+     */
 	public void setTag(String tag) {
 		if (tag == null) {
 			if (this.tag != null) {
@@ -223,10 +244,18 @@ public final class GameObject {
 		this.tag = tag;
 	}
 
+    /**
+     * Gets the tag of this {@link GameObject}
+     * @return The tag of this {@link GameObject}
+     */
 	public String getTag() {
 		return tag;
 	}
 
+    /**
+     * Called when another {@link Collider} has entered this {@link GameObject GameObject's} trigger {@link Collider}
+     * @param collider The other {@link Collider} that has entered this {@link GameObject GameObject's} trigger {@link Collider}
+     */
 	void onTriggerEnter(Collider collider) {
 		for (Component component : components) {
 			component.onTriggerEnter(collider);
@@ -239,16 +268,31 @@ public final class GameObject {
 		}
 	}
 
+    /**
+     * Create the given {@link GameObject} within the game world
+     * @param gameObject The {@link GameObject} to create
+     * @param position The coordinates to create the given {@link GameObject} at
+     * @return The {@link GameObject} that was passed into this method as a parameter
+     */
 	public static GameObject instantiate(GameObject gameObject, Vector2 position) {
 		gameObject.transform.position.set(position.x, position.y);
 		newObjects.add(gameObject);
 		return gameObject;
 	}
 
+    /**
+     * Removes the given {@link GameObject} from the game world
+     * @param gameObject The {@link GameObject} to remove from the game world
+     */
 	public static void destroy(GameObject gameObject) {
 		destroyedObjects.add(gameObject);
 	}
 
+    /**
+     * Removes the given {@link GameObject} from the game world after a given time period has elapsed
+     * @param gameObject The {@link GameObject} to remove from the game world
+     * @param delay The time period to wait before the given {@link GameObject} is destroyed
+     */
 	public static void destroy(final GameObject gameObject, final long delay) {
 		new Thread() {
 			@Override
