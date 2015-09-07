@@ -105,11 +105,11 @@ public final class Collider extends BoundedComponent {
 					if (y > 0 && bounds.bottom > c.bounds.top) {
 						transform.position.y = Math.round(c.bounds.top - bounds.height());
 						gameObject.onCollision(c, new Collision(CollisionLocation.BOTTOM, y));
-						gameObject.rigidbody.gravity = 0;
+						gameObject.rigidbody.velocity.y = 0;
 					} else if (y < 0 && bounds.top < c.bounds.bottom) {
 						transform.position.y = Math.round(c.bounds.bottom);
 						gameObject.onCollision(c, new Collision(CollisionLocation.TOP, y));
-						gameObject.rigidbody.gravity = 0;
+						gameObject.rigidbody.velocity.y = 0;
 					}
 					recalculateBounds();
 				}
