@@ -56,7 +56,7 @@ public final class Animator extends Script {
 			gameObject.renderer.sprite = animations[index].frames[frame];
 		}
 		if (frame != startFrame && animations[index].listener != null) {
-			animations[index].listener.onFrame(frame);
+			animations[index].listener.onFrame(this, frame);
 		}
 	}
 
