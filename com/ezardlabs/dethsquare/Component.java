@@ -17,11 +17,17 @@ public class Component {
 	 */
 	public Transform transform;
 
-	protected void destroy() {
-	}
-
+    /**
+     * Called when this {@link Component} is first created
+     */
 	public void start() {
 	}
+
+    /**
+     * Called when this {@link Component} is destroyed
+     */
+    protected void destroy() {
+    }
 
 	public void onTriggerEnter(Collider other) {
 	}
