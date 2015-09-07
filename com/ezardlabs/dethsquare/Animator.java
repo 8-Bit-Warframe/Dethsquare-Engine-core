@@ -76,4 +76,9 @@ public final class Animator extends Script {
 			}
 		}
 	}
+
+    public Animation getCurrentAnimation() {
+        if (index == -1) return null;
+        else return animations[index];
+    }
 }
