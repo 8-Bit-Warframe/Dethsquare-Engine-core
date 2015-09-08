@@ -111,34 +111,6 @@ public final class GameObject {
 	 * @return The {@link Component} that has just been attached
 	 */
 	public <T extends Component> T addComponent(T component) {
-//		for (Component c : components) {
-//			if (c.getClass().equals(component.getClass())) {
-//				if (c instanceof Script) {
-//					scripts.remove(c);
-//				}
-//				components.remove(c);
-//				break;
-//			}
-//		}
-//		component.gameObject = this;
-//		component.transform = transform;
-//		components.add(component);
-//		if (!startAllCalled) {
-//			if (component instanceof Script) {
-//				scripts.add((Script) component);
-//			}
-//			if (component instanceof Transform) {
-//				transform = (Transform) component;
-//			} else if (component instanceof Renderer) {
-//				renderer = (Renderer) component;
-//			} else if (component instanceof Animator) {
-//				animator = (Animator) component;
-//			} else if (component instanceof Collider) {
-//				collider = (Collider) component;
-//			} else if (component instanceof Rigidbody) {
-//				rigidbody = (Rigidbody) component;
-//			}
-//		}
 		newComponents.add(component);
 		objectsWithChangedComponents.add(this);
 		return component;
@@ -190,21 +162,6 @@ public final class GameObject {
 		objectsWithChangedComponents.add(this);
 		for (Component c : components) {
 			if (c.getClass().equals(component)) {
-//				if (c instanceof Script) {
-//					scripts.remove(c);
-//				}
-//				if (c instanceof Transform) {
-//					transform = null;
-//				} else if (c instanceof Renderer) {
-//					renderer = null;
-//				} else if (c instanceof Animator) {
-//					animator = null;
-//				} else if (c instanceof Collider) {
-//					collider = null;
-//				} else if (c instanceof Rigidbody) {
-//					rigidbody = null;
-//				}
-//				components.remove(c);
 				//noinspection unchecked
 				return (T) c;
 			}
@@ -308,14 +265,6 @@ public final class GameObject {
 
 	public static void startAll() {
 		handleCreationDestruction();
-//		objects.addAll(newObjects);
-//		newObjects.clear();
-//		for (GameObject go : objects) {
-//			for (Component component : go.components) {
-//				component.start();
-//			}
-//		}
-//		startAllCalled = true;
 	}
 
 	public static void updateAll() {

@@ -74,9 +74,6 @@ public final class QuadTree<T extends BoundedComponent> {
 		if (c.bounds.contains(qt.bounds)) { // quad is completely inside camera
 			addAllChildren(returnObjects, qt);
 		}
-//		if (qt.bounds.contains(c.bounds)) { // camera is completely inside quad
-//			Log.i("", "Camera is completely inside quad");
-//		}
 		if (RectF.intersects(c.bounds, qt.bounds)) { // camera and quad are intersecting
 			if (qt.nodes[0] == null) {
 				returnObjects.addAll(qt.objects);
