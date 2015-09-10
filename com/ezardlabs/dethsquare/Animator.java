@@ -5,8 +5,6 @@ public final class Animator extends Script {
 	private int index = -1;
 	private int frame = 0;
 	private long nextFrameTime = 0;
-	private boolean onAnimationFinishedCalled = false;
-	private int direction = 1;
 
 	public Animator(Animation... animations) {
 		this.animations = animations;
@@ -25,35 +23,22 @@ public final class Animator extends Script {
 
 	public void update() {
 		int startFrame = frame;
-		if (index == -1) return;
+		if (index == -1 ||frame == -1) return;
 		if (System.currentTimeMillis() >= nextFrameTime) {
 			nextFrameTime += animations[index].frameDuration;
-			switch (animations[index].type) {
-				case LOOP:
-					frame += direction;
-					if (frame == animations[index].frames.length) {
-						frame = 0;
-					}
-					break;
-				case ONE_SHOT:
-					if (frame < animations[index].frames.length - 1) {
-						frame += direction;
-					} else {
-						if (!onAnimationFinishedCalled && animations[index].listener != null) {
-							animations[index].listener.onAnimationFinished(this);
-							onAnimationFinishedCalled = true;
-						}
-						return;
-					}
-					break;
-				case OSCILLATE:
-					frame += direction;
-					if (frame == 0 || frame == animations[index].frames.length - 1) {
-						direction *= -1;
-					}
-					break;
+			frame = animations[index].type.update(frame, animations[index].frames.length);
+			if (frame == -1) {
+				if (animations[index].listener != null) {
+					animations[index].listener.onAnimationFinished(this);
+				}
+				return;
 			}
-			gameObject.renderer.sprite = animations[index].frames[frame];
+			if (animations[index].name.contains("nikana")) System.out.println("index: " + index + ", frame: " + frame);
+			try {
+				gameObject.renderer.sprite = animations[index].frames[frame];
+			} catch (ArrayIndexOutOfBoundsException e) {
+				System.err.println(gameObject.name + ", " + animations[index].name);
+			}
 		}
 		if (frame != startFrame && animations[index].listener != null) {
 			animations[index].listener.onFrame(this, frame);
@@ -66,9 +51,7 @@ public final class Animator extends Script {
 			if (i != index && animations[i].name.equals(animationName)) {
 				index = i;
 				frame = 0;
-				direction = 1;
 				nextFrameTime = System.currentTimeMillis() + animations[index].frameDuration;
-				onAnimationFinishedCalled = false;
 				gameObject.renderer.sprite = animations[index].frames[frame];
 				if (animations[index].listener != null)
 					animations[index].listener.onAnimatedStarted(this);
