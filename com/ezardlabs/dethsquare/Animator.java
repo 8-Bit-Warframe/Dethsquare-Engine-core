@@ -33,7 +33,6 @@ public final class Animator extends Script {
 				}
 				return;
 			}
-			if (animations[index].name.contains("nikana")) System.out.println("index: " + index + ", frame: " + frame);
 			try {
 				gameObject.renderer.sprite = animations[index].frames[frame];
 			} catch (ArrayIndexOutOfBoundsException e) {
