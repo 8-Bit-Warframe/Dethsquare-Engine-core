@@ -1,6 +1,6 @@
 package com.ezardlabs.dethsquare;
 
-public class Time {
+public final class Time {
 	/**
 	 * The time in seconds it took to complete the last frame
 	 */
