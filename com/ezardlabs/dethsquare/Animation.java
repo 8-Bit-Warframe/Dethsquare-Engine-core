@@ -1,19 +1,14 @@
 package com.ezardlabs.dethsquare;
 
 import com.ezardlabs.dethsquare.TextureAtlas.Sprite;
+import com.ezardlabs.dethsquare.animationtypes.AnimationType;
 
 public final class Animation {
-	String name;
-	Sprite[] frames;
-	AnimationType type;
-	long frameDuration;
+	public final String name;
+	final Sprite[] frames;
+	final AnimationType type;
+	final long frameDuration;
 	AnimationListener listener;
-
-	public enum AnimationType {
-		LOOP,
-		ONE_SHOT,
-		OSCILLATE
-	}
 
 	public Animation(String name, Sprite[] frames, AnimationType type, long frameDuration) {
 		this.name = name;
@@ -31,7 +26,7 @@ public final class Animation {
 	public interface AnimationListener {
 		void onAnimatedStarted(Animator animator);
 
-		void onFrame(int frameNum);
+		void onFrame(Animator animator, int frameNum);
 
 		void onAnimationFinished(Animator animator);
 	}

@@ -45,6 +45,8 @@ public final class TextureAtlas {
 	}
 
 	public Sprite getSprite(String name) {
+		if (!atlas.containsKey(name)) throw new Error("Sprite \"" + name + "\" not found in " +
+				mapPath);
 		return atlas.get(name);
 	}
 

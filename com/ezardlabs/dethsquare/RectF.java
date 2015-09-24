@@ -9,7 +9,7 @@ import java.io.PrintWriter;
  * the rectangle's width and height. Note: most methods do not check to see that
  * the coordinates are sorted correctly (i.e. left <= right and top <= bottom).
  */
-public class RectF {
+public final class RectF {
 	public float left;
 	public float top;
 	public float right;
