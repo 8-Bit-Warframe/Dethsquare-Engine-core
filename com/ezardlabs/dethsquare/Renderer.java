@@ -66,6 +66,10 @@ public class Renderer extends BoundedComponent {
 		this.height = height;
 	}
 
+	public void setSprite(Sprite sprite) {
+		this.sprite = sprite;
+	}
+
 	public void setSize(int width, int height) {
 		this.width = width;
 		this.height = height;
@@ -237,7 +241,7 @@ public class Renderer extends BoundedComponent {
 					break;
 				case NONE:
 				default:
-					return;
+					u = v = w = h = 0;
 			}
 			if (r.hFlipped && r.vFlipped) {
 				uvs[(i * 8) + 6] = u;
