@@ -270,8 +270,8 @@ public final class GameObject {
 	public static void updateAll() {
 		handleCreationDestruction();
 
-		for (Script s : scripts) {
-			s.update();
+		for (int i = 0; i < scripts.size(); i++) {
+			scripts.get(i).update();
 		}
 	}
 
