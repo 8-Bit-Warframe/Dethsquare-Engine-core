@@ -196,7 +196,7 @@ public class Renderer extends BoundedComponent {
 		int i = 0;
 		int last = 0;
 		Renderer r;
-		for(int j = 0; j < renderers.size(); j++) {
+		for (int j = 0; j < renderers.size(); j++) {
 			r = renderers.get(j);
 //			vertices[(i * 12)] = r.transform.position.x * Screen.scale;
 //			vertices[(i * 12) + 1] = r.transform.position.y * Screen.scale + (r.height * Screen.scale);
@@ -291,13 +291,15 @@ public class Renderer extends BoundedComponent {
 
 			i++;
 		}
-
+		vertexBuffer.position(0);
 		vertexBuffer.put(vertices);
 		vertexBuffer.position(0);
 
+		indexBuffer.position(0);
 		indexBuffer.put(indices);
 		indexBuffer.position(0);
 
+		uvBuffer.position(0);
 		uvBuffer.put(uvs);
 		uvBuffer.position(0);
 	}
