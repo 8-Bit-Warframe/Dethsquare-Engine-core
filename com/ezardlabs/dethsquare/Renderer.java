@@ -107,11 +107,20 @@ public class Renderer extends BoundedComponent {
 	@Override
 	public void start() {
 		renderers.add(this);
+		vertices = new float[vertices.length + 12];
+		indices = new short[indices.length + 6];
+		uvs = new float[uvs.length + 8];
+		vertexBuffer = ByteBuffer.allocateDirect(vertices.length * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
+		indexBuffer = ByteBuffer.allocateDirect(indices.length * 2).order(ByteOrder.nativeOrder()).asShortBuffer();
+		uvBuffer = ByteBuffer.allocateDirect(uvs.length * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
 	}
 
 	@Override
 	protected void destroy() {
 		renderers.remove(this);
+		vertices = new float[vertices.length - 12];
+		indices = new short[indices.length - 6];
+		uvs = new float[uvs.length - 8];
 	}
 
 	public static void init() {
@@ -165,7 +174,7 @@ public class Renderer extends BoundedComponent {
 
 					setupRenderData(visible);
 
-					Utils.render(temp.get(i).textureName, vertexBuffer, uvBuffer, indices, indexBuffer);
+					Utils.render(temp.get(i).textureName, vertexBuffer, uvBuffer, visible.size() * 6, indexBuffer);
 
 					drawCalls++;
 				}
@@ -174,22 +183,21 @@ public class Renderer extends BoundedComponent {
 //		Log.i("", "Draw calls: " + drawCalls);
 	}
 
-	private static float[] vertices;
-	private static short[] indices;
-	private static float[] uvs;
 	private static ArrayList<Renderer> visible = new ArrayList<>();
+
+	private static float[] vertices = new float[0];
+	private static short[] indices = new short[0];
+	private static float[] uvs = new float[0];
 	private static FloatBuffer vertexBuffer;
 	private static ShortBuffer indexBuffer;
 	private static FloatBuffer uvBuffer;
 
 	private static void setupRenderData(ArrayList<Renderer> renderers) {
-		vertices = new float[renderers.size() * 4 * 3];
-		indices = new short[renderers.size() * 6];
-		uvs = new float[renderers.size() * 4 * 2];
-
 		int i = 0;
 		int last = 0;
-		for (Renderer r : renderers) {
+		Renderer r;
+		for(int j = 0; j < renderers.size(); j++) {
+			r = renderers.get(j);
 //			vertices[(i * 12)] = r.transform.position.x * Screen.scale;
 //			vertices[(i * 12) + 1] = r.transform.position.y * Screen.scale + (r.height * Screen.scale);
 //			vertices[(i * 12) + 2] = 0;
@@ -284,22 +292,12 @@ public class Renderer extends BoundedComponent {
 			i++;
 		}
 
-		ByteBuffer vb = ByteBuffer.allocateDirect(vertices.length * 4);
-		vb.order(ByteOrder.nativeOrder());
-		vertexBuffer = vb.asFloatBuffer();
 		vertexBuffer.put(vertices);
 		vertexBuffer.position(0);
 
-		// initialize byte buffer for the draw list
-		ByteBuffer dlb = ByteBuffer.allocateDirect(indices.length * 2);
-		dlb.order(ByteOrder.nativeOrder());
-		indexBuffer = dlb.asShortBuffer();
 		indexBuffer.put(indices);
 		indexBuffer.position(0);
 
-		ByteBuffer uvb = ByteBuffer.allocateDirect(uvs.length * 4);
-		uvb.order(ByteOrder.nativeOrder());
-		uvBuffer = uvb.asFloatBuffer();
 		uvBuffer.put(uvs);
 		uvBuffer.position(0);
 	}
