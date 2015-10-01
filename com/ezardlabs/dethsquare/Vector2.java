@@ -43,12 +43,14 @@ public final class Vector2 {
 		return new Vector2(this.x + x, this.y + y);
 	}
 
+	/**
+	 * Calculates the distance between 2 vector points
+	 * @param a the first point
+	 * @param b the second point
+	 * @return The distance between the 2 points
+	 */
 	public static double distance(Vector2 a, Vector2 b) {
 		return Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2));
-	}
-
-	public static double distance(Vector2 vector, float x, float y) {
-		return Math.sqrt(Math.pow(x - vector.x, 2) + Math.pow(y - vector.y, 2));
 	}
 
 	@Override

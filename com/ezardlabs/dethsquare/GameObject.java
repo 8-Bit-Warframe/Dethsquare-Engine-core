@@ -34,8 +34,6 @@ public final class GameObject {
      * List of all {@link GameObject GameObjects} whose components have been modified in some way since last frame
      */
 	private static final ArrayList<GameObject> objectsWithChangedComponents = new ArrayList<>();
-
-	private static boolean startAllCalled = false;
 	/**
 	 * The name of the {@link GameObject}
 	 */
@@ -44,8 +42,6 @@ public final class GameObject {
      * The tag of this {@link GameObject}. Tags are used to define generic groups of {@link GameObject GameObjects} (e.g. players, enemies, etc)
      */
 	private String tag;
-
-	private boolean initialised = false;
 	/**
 	 * Whether or not the {@link GameObject} is static, i.e. whether or not it will ever move.
 	 * Static {@link GameObject GameObjects} can have their rendering and collision optimised
@@ -151,7 +147,6 @@ public final class GameObject {
 	 * If it doesn't exist then nothing happens
 	 *
 	 * @param component The type of {@link Component} to remove from this {@link GameObject}
-	 * @param <T>
 	 * @return The removed {@link Component} if it existed; otherwise null
 	 */
 	public <T extends Component> T removeComponent(Class<T> component) {
@@ -275,6 +270,11 @@ public final class GameObject {
 		}
 	}
 
+	/**
+	 * Finds all {@link GameObject GameObjects} with the given tag
+	 * @param tag The name of the tag to search all objects for
+	 * @return an array of all {@link GameObject GameObjects} with the given tag
+	 */
 	public static GameObject[] findAllWithTag(String tag) {
 		if (tags.containsKey(tag)) {
 			return tags.get(tag).toArray(new GameObject[tags.get(tag).size()]);
