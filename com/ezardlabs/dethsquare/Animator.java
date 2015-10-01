@@ -1,6 +1,8 @@
 package com.ezardlabs.dethsquare;
 
-public final class Animator extends Script {
+import java.util.Iterator;
+
+public final class Animator extends Script implements Iterable<Animation> {
 	private Animation[] animations;
 	private int index = -1;
 	private int frame = 0;
@@ -23,7 +25,7 @@ public final class Animator extends Script {
 
 	public void update() {
 		int startFrame = frame;
-		if (index == -1 ||frame == -1) return;
+		if (index == -1 || frame == -1) return;
 		if (System.currentTimeMillis() >= nextFrameTime) {
 			nextFrameTime += animations[index].frameDuration;
 			frame = animations[index].type.update(frame, animations[index].frames.length);
@@ -59,8 +61,13 @@ public final class Animator extends Script {
 		}
 	}
 
-    public Animation getCurrentAnimation() {
-        if (index == -1) return null;
-        else return animations[index];
-    }
+	public Animation getCurrentAnimation() {
+		if (index == -1) return null;
+		else return animations[index];
+	}
+
+	@Override
+	public Iterator<Animation> iterator() {
+		return new ObjectIterator<>(animations);
+	}
 }
