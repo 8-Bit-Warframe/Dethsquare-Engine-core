@@ -2,7 +2,7 @@ package com.ezardlabs.dethsquare;
 
 import java.util.Iterator;
 
-class ObjectIterator<T> implements Iterator<T> {
+final class ObjectIterator<T> implements Iterator<T> {
 	private final T[] objects;
 	private int current = -1;
 

@@ -3,7 +3,7 @@ package com.ezardlabs.dethsquare;
 import java.util.ArrayList;
 
 @SuppressWarnings("unchecked")
-public final class QuadTree<T extends BoundedComponent> {
+final class QuadTree<T extends BoundedComponent> {
 	private final int maxObjects;
 	private RectF bounds;
 	private ArrayList<T> objects = new ArrayList<>();
