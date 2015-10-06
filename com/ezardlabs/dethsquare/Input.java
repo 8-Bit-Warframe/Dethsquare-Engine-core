@@ -1,21 +1,18 @@
 package com.ezardlabs.dethsquare;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Input {
-	public static OnTouchListener[] onTouchListeners = new OnTouchListener[0];
-
-	public static void addOnTouchListener(OnTouchListener listener) {
-		onTouchListeners = Arrays.copyOf(onTouchListeners, onTouchListeners.length + 1);
-		Input.onTouchListeners[onTouchListeners.length - 1] = listener;
-	}
+public final class Input {
+	public static Touch[] touches = new Touch[0];
 
 	/**
 	 * Each key that has been pressed either has a value of true if it has been pressed down in the current frame, or false if it's been held down for multiple frames
 	 */
 	private static HashMap<KeyCode, Integer> keys = new HashMap<>();
 	private static HashMap<KeyCode, Integer> keyChanges = new HashMap<>();
+
+	private static ArrayList<Touch> touchesToRemove = new ArrayList<>(10);
 
 	public enum KeyCode {
 		A,
@@ -75,7 +72,7 @@ public class Input {
 
 	public static void update() {
 		for (KeyCode keyCode : keys.keySet().toArray(new KeyCode[keys.size()])) {
-			switch(keys.get(keyCode)) {
+			switch (keys.get(keyCode)) {
 				case 0:
 					keys.put(keyCode, 1);
 					break;
@@ -86,6 +83,27 @@ public class Input {
 		}
 		keys.putAll(keyChanges);
 		keyChanges.clear();
+		//noinspection ForLoopReplaceableByForEach
+		for (int i = 0; i < touches.length; i++) {
+			if ((touches[i].phase == Touch.TouchPhase.ENDED || touches[i].phase == Touch.TouchPhase.CANCELLED) && touches[i].lastModified < Time.frameCount) {
+				touchesToRemove.add(touches[i]);
+			} else if (touches[i].lastModified < Time.frameCount) {
+				touches[i].lastModified = Time.frameCount;
+				touches[i].phase = Touch.TouchPhase.STATIONARY;
+			}
+		}
+		if (touchesToRemove.size() > 0) {
+			Touch[] temp = new Touch[touches.length - touchesToRemove.size()];
+			int count = 0;
+			//noinspection ForLoopReplaceableByForEach
+			for (int i = 0; i < touches.length; i++) {
+				if (!touchesToRemove.contains(touches[i])) {
+					temp[count++] = touches[i];
+				}
+			}
+			touchesToRemove.clear();
+			touches = temp;
+		}
 	}
 
 	public static void setKeyDown(KeyCode keyCode) {
@@ -108,15 +126,40 @@ public class Input {
 		return keys.containsKey(keyCode) && keys.get(keyCode) == 2;
 	}
 
-	public interface OnTouchListener {
-		void onTouchDown(int id, float x, float y);
+	public static void addTouch(int id, float x, float y) {
+		Touch[] temp = new Touch[touches.length + 1];
+		System.arraycopy(touches, 0, temp, 0, touches.length);
+		temp[touches.length] = new Touch(id, new Vector2(x, y));
+		touches = temp;
+	}
 
-		void onTouchMove(int id, float x, float y);
+	public static void moveTouch(int id, float x, float y) {
+		for (Touch t : touches) {
+			if (t.fingerId == id && t.lastModified < Time.frameCount) {
+				t.phase = Touch.TouchPhase.MOVED;
+				t.position.set(x, y);
+				t.lastModified = Time.frameCount;
+			}
+		}
+	}
 
-		void onTouchUp(int id, float x, float y);
+	public static void removeTouch(int id, float x, float y) {
+		for (Touch t : touches) {
+			if (t.fingerId == id) {
+				t.phase = Touch.TouchPhase.ENDED;
+				t.position.set(x, y);
+				t.lastModified = Time.frameCount;
+			}
+		}
+	}
 
-		void onTouchCancel(int id);
-
-		void onTouchOutside(int id);
+	public static void cancelTouch(int id, float x, float y) {
+		for (Touch t : touches) {
+			if (t.fingerId == id) {
+				t.phase = Touch.TouchPhase.CANCELLED;
+				t.position.set(x, y);
+				t.lastModified = Time.frameCount;
+			}
+		}
 	}
 }
