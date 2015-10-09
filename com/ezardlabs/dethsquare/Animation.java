@@ -1,7 +1,6 @@
 package com.ezardlabs.dethsquare;
 
 import com.ezardlabs.dethsquare.TextureAtlas.Sprite;
-import com.ezardlabs.dethsquare.animationtypes.AnimationType;
 
 public final class Animation {
 	public final String name;
