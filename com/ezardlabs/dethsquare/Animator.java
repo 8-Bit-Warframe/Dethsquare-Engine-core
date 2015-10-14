@@ -37,8 +37,7 @@ public final class Animator extends Script implements Iterable<Animation> {
 			}
 			try {
 				gameObject.renderer.sprite = animations[index].frames[frame];
-			} catch (ArrayIndexOutOfBoundsException e) {
-				System.err.println(gameObject.name + ", " + animations[index].name);
+			} catch (ArrayIndexOutOfBoundsException ignored) {
 			}
 		}
 		if (frame != startFrame && animations[index].listener != null) {
@@ -54,8 +53,7 @@ public final class Animator extends Script implements Iterable<Animation> {
 				frame = 0;
 				nextFrameTime = System.currentTimeMillis() + animations[index].frameDuration;
 				gameObject.renderer.sprite = animations[index].frames[frame];
-				if (animations[index].listener != null)
-					animations[index].listener.onAnimatedStarted(this);
+				if (animations[index].listener != null) animations[index].listener.onAnimatedStarted(this);
 				break;
 			}
 		}
