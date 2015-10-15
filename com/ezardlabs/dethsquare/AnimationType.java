@@ -1,6 +1,9 @@
 package com.ezardlabs.dethsquare;
 
 public abstract class AnimationType {
+	/**
+	 * An animation that runs a single time, from start to end
+	 */
 	public static final AnimationType ONE_SHOT = new AnimationType() {
 		@Override
 		public int update(int currentFrame, int numFrames) {
@@ -8,6 +11,9 @@ public abstract class AnimationType {
 			else return -1;
 		}
 	};
+	/**
+	 * An animation that oscillates between its start and end points
+	 */
 	public static final AnimationType OSCILLATE = new AnimationType() {
 		private int direction = 1;
 
@@ -20,6 +26,9 @@ public abstract class AnimationType {
 			return currentFrame;
 		}
 	};
+	/**
+	 * An animation that plays through from start to end, restarting when finished
+	 */
 	public static final AnimationType LOOP = new AnimationType() {
 		@Override
 		public int update(int currentFrame, int numFrames) {
@@ -29,5 +38,11 @@ public abstract class AnimationType {
 		}
 	};
 
+	/**
+	 * Describes how the animation should progress, based on the current frame
+	 * @param currentFrame The frame that the animation is currently at
+	 * @param numFrames The total number of frames in the animation
+	 * @return The next frame in the animation to go to
+	 */
 	public abstract int update(int currentFrame, int numFrames);
 }
