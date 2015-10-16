@@ -133,10 +133,11 @@ public final class GameObject {
      * @param <T> The type to automatically cast the result to
      * @return The first {@link Component} of the given type
      */
-	public <T extends Component> Component getComponentOfType(Class<T> type) {
+	public <T extends Component> T getComponentOfType(Class<T> type) {
 		for (Component c : components) {
 			if (type.isAssignableFrom(c.getClass())) {
-				return c;
+				//noinspection unchecked
+				return (T) c;
 			}
 		}
 		return null;
