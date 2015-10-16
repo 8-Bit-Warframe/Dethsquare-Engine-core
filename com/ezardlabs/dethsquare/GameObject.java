@@ -147,17 +147,17 @@ public final class GameObject {
 	 * Removes the {@link Component} of the given type from this {@link GameObject} if it exists.
 	 * If it doesn't exist then nothing happens
 	 *
-	 * @param component The type of {@link Component} to remove from this {@link GameObject}
+	 * @param type The type of {@link Component} to remove from this {@link GameObject}
 	 * @return The removed {@link Component} if it existed; otherwise null
 	 */
-	public <T extends Component> T removeComponent(Class<T> component) {
-		if (component.equals(Transform.class)) {
-			throw new Error("Cannot remove the Transform component of a GameObject");
+	public <T extends Component> T removeComponent(Class<T> type) {
+		if (type.equals(Transform.class)) {
+			throw new Error("Cannot remove the Transform type of a GameObject");
 		}
-		removedComponents.add(component);
+		removedComponents.add(type);
 		objectsWithChangedComponents.add(this);
 		for (Component c : components) {
-			if (c.getClass().equals(component)) {
+			if (c.getClass().equals(type)) {
 				//noinspection unchecked
 				return (T) c;
 			}
