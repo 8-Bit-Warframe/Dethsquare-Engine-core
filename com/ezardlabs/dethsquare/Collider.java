@@ -104,10 +104,7 @@ public final class Collider extends BoundedComponent {
 				if (c != this && c != null && !c.isTrigger && RectF.intersects(bounds, c.bounds)) {
 					if (y > 0 && bounds.bottom > c.bounds.top) {
 						transform.position.y = Math.round(c.bounds.top - bounds.height());
-						if (transform.position.y != lastBounds.top || (gameObject.rigidbody != null
-								&& y > gameObject.rigidbody.gravity)) {
-							gameObject.onCollision(c, new Collision(CollisionLocation.BOTTOM, y));
-						}
+						gameObject.onCollision(c, new Collision(CollisionLocation.BOTTOM, y));
 						if (gameObject.rigidbody != null) gameObject.rigidbody.velocity.y = 0;
 					} else if (y < 0 && bounds.top < c.bounds.bottom) {
 						transform.position.y = Math.round(c.bounds.bottom);
