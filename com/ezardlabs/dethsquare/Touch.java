@@ -5,7 +5,7 @@ public final class Touch {
 	public final Vector2 position;
 	public final Vector2 startPosition;
 	public TouchPhase phase = TouchPhase.BEGAN;
-	long lastModified = 0;
+	public long lastModified = 0;
 
 	public enum TouchPhase {
 		/**

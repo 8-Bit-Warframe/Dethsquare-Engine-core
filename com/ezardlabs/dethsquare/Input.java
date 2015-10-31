@@ -1,5 +1,7 @@
 package com.ezardlabs.dethsquare;
 
+import com.ezardlabs.dethsquare.Touch.TouchPhase;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -12,6 +14,7 @@ public final class Input {
 	private static HashMap<KeyCode, Integer> keys = new HashMap<>();
 	private static HashMap<KeyCode, Integer> keyChanges = new HashMap<>();
 
+	private static ArrayList<Holder> changesToMake = new ArrayList<>(10);
 	private static ArrayList<Touch> touchesToRemove = new ArrayList<>(10);
 
 	public enum KeyCode {
@@ -70,7 +73,64 @@ public final class Input {
 		F12
 	}
 
+	private static class Holder {
+		int id;
+		float x;
+		float y;
+		TouchPhase phase;
+
+		Holder(int id, float x, float y, TouchPhase phase) {
+			this.id = id;
+			this.x = x;
+			this.y = y;
+			this.phase = phase;
+		}
+	}
+
 	public static void update() {
+		Holder holder;
+		for (int i = 0; i < changesToMake.size(); i++) {
+			switch((holder = changesToMake.get(i)).phase) {
+				case BEGAN:
+					Touch[] temp = new Touch[touches.length + 1];
+					System.arraycopy(touches, 0, temp, 0, touches.length);
+					temp[touches.length] = new Touch(holder.id, new Vector2(holder.x, holder.y));
+					touches = temp;
+					break;
+				case MOVED:
+					for (Touch t : touches) {
+						if (t.fingerId == holder.id && t.lastModified < Time.frameCount) {
+							t.phase = Touch.TouchPhase.MOVED;
+							t.position.set(holder.x, holder.y);
+							t.lastModified = Time.frameCount;
+						}
+					}
+					break;
+				case STATIONARY:
+					break;
+				case ENDED:
+					for (Touch t : touches) {
+						if (t.fingerId == holder.id) {
+							t.phase = Touch.TouchPhase.ENDED;
+							t.position.set(holder.x, holder.y);
+							t.lastModified = Time.frameCount;
+						}
+					}
+					break;
+				case CANCELLED:
+					for (Touch t : touches) {
+						if (t.fingerId == holder.id) {
+							t.phase = Touch.TouchPhase.CANCELLED;
+							t.position.set(holder.x, holder.y);
+							t.lastModified = Time.frameCount;
+						}
+					}
+					break;
+			}
+		}
+
+		changesToMake.clear();
+
 		for (KeyCode keyCode : keys.keySet().toArray(new KeyCode[keys.size()])) {
 			switch (keys.get(keyCode)) {
 				case 0:
@@ -127,39 +187,18 @@ public final class Input {
 	}
 
 	public static void addTouch(int id, float x, float y) {
-		Touch[] temp = new Touch[touches.length + 1];
-		System.arraycopy(touches, 0, temp, 0, touches.length);
-		temp[touches.length] = new Touch(id, new Vector2(x, y));
-		touches = temp;
+		changesToMake.add(new Holder(id, x, y, TouchPhase.BEGAN));
 	}
 
 	public static void moveTouch(int id, float x, float y) {
-		for (Touch t : touches) {
-			if (t.fingerId == id && t.lastModified < Time.frameCount) {
-				t.phase = Touch.TouchPhase.MOVED;
-				t.position.set(x, y);
-				t.lastModified = Time.frameCount;
-			}
-		}
+		changesToMake.add(new Holder(id, x, y, TouchPhase.MOVED));
 	}
 
 	public static void removeTouch(int id, float x, float y) {
-		for (Touch t : touches) {
-			if (t.fingerId == id) {
-				t.phase = Touch.TouchPhase.ENDED;
-				t.position.set(x, y);
-				t.lastModified = Time.frameCount;
-			}
-		}
+		changesToMake.add(new Holder(id, x, y, TouchPhase.ENDED));
 	}
 
 	public static void cancelTouch(int id, float x, float y) {
-		for (Touch t : touches) {
-			if (t.fingerId == id) {
-				t.phase = Touch.TouchPhase.CANCELLED;
-				t.position.set(x, y);
-				t.lastModified = Time.frameCount;
-			}
-		}
+		changesToMake.add(new Holder(id, x, y, TouchPhase.CANCELLED));
 	}
 }
