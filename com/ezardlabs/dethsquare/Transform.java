@@ -15,8 +15,6 @@ public final class Transform extends Component {
 	public void translate(float x, float y) {
 		if (gameObject.isStatic) throw new Error("Static objects cannot be moved");
 		if (x == 0 && y == 0) return;
-		if (position.x + x < 0) x = -position.x;
-		if (position.y + y < 0) y = -position.y;
 		if (gameObject.collider != null) {
 			gameObject.collider.move(x, y);
 		} else {
