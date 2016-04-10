@@ -56,7 +56,7 @@ public final class TextureAtlas {
 		public float w;
 		public float h;
 
-		private Sprite(float u, float v, float w, float h) {
+		public Sprite(float u, float v, float w, float h) {
 			this.u = u;
 			this.v = v;
 			this.w = w;
