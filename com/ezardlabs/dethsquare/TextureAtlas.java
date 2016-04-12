@@ -30,24 +30,47 @@ public final class TextureAtlas {
 		width = data[1];
 		height = data[2];
 
-		try {
-			String temp;
-			BufferedReader reader = Utils.getReader(mapPath);
-			while ((temp = reader.readLine()) != null) {
-				String[] split = temp.split(" = ");
-				String[] split2 = split[1].split(" ");
-				atlas.put(split[0], new Sprite(Float.parseFloat(split2[0]) / width,
-						Float.parseFloat(split2[1]) / height, Float.parseFloat(split2[2]) / width,
-						Float.parseFloat(split2[3]) / height));
+		if(mapPath != null) {
+			try {
+				String temp;
+				BufferedReader reader = Utils.getReader(mapPath);
+				while ((temp = reader.readLine()) != null) {
+					String[] split = temp.split(" = ");
+					String[] split2 = split[1].split(" ");
+					atlas.put(split[0], new Sprite(Float.parseFloat(split2[0]) / width,
+							Float.parseFloat(split2[1]) / height, Float.parseFloat(split2[2]) / width,
+							Float.parseFloat(split2[3]) / height));
+				}
+			} catch (IOException ignored) {
 			}
-		} catch (IOException ignored) {
+		} else {
+			float tileWidth = 16.0f;
+			float tileHeight = 16.0f;
+			int count = 0;
+			for(int y = 0; y < height; y += 16) {
+				for(int x = 0; x < width; x += 16) {
+					atlas.put(String.valueOf(count++),
+						new Sprite(
+							(float) x / width,
+							(float) y / height,
+							tileWidth / width,
+							tileHeight / height
+						)
+					);
+				}
+			}
 		}
+	}
+
+	public TextureAtlas(String imagePath) {
+		this(imagePath, null);
 	}
 
 	public Sprite getSprite(String name) {
 		if (!atlas.containsKey(name)) throw new Error("Sprite \"" + name + "\" not found in " +
 				mapPath);
-		return atlas.get(name);
+		Sprite sprite = atlas.get(name);
+		return sprite;
 	}
 
 	public static class Sprite {

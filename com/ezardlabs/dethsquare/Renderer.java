@@ -42,14 +42,6 @@ public class Renderer extends BoundedComponent {
 		setImage(imagePath, width, height);
 	}
 
-	public Renderer(String imagePath, float u, float v, float spriteWidth, float spriteHeight) {
-		setImage(imagePath, spriteWidth, spriteHeight);
-		this.mode = Mode.SPRITE;
-		this.sprite = new Sprite(u, v, spriteWidth, spriteHeight);
-		this.width = spriteWidth;
-		this.height = spriteHeight;
-	}
-
 	public Renderer(TextureAtlas textureAtlas, Sprite sprite, float width, float height) {
 		setTextureAtlas(textureAtlas, width, height);
 		this.sprite = sprite;
