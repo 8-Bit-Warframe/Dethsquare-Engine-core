@@ -14,7 +14,7 @@ public final class TextureAtlas {
 	public int width;
 	public int height;
 
-	public TextureAtlas(String imagePath, String mapPath) {
+	private TextureAtlas(String imagePath, String mapPath, int tileWidth, int tileHeight) {
 		this.imagePath = imagePath;
 		this.mapPath = mapPath;
 
@@ -44,17 +44,15 @@ public final class TextureAtlas {
 			} catch (IOException ignored) {
 			}
 		} else {
-			float tileWidth = 16.0f;
-			float tileHeight = 16.0f;
 			int count = 0;
-			for(int y = 0; y < height; y += 16) {
-				for(int x = 0; x < width; x += 16) {
+			for(int y = 0; y < height; y += tileHeight) {
+				for(int x = 0; x < width; x += tileWidth) {
 					atlas.put(String.valueOf(count++),
 						new Sprite(
 							(float) x / width,
 							(float) y / height,
-							tileWidth / width,
-							tileHeight / height
+							(float) tileWidth / width,
+							(float) tileHeight / height
 						)
 					);
 				}
@@ -62,8 +60,12 @@ public final class TextureAtlas {
 		}
 	}
 
-	public TextureAtlas(String imagePath) {
-		this(imagePath, null);
+	public TextureAtlas(String imagePath, String mapPath) {
+		this(imagePath, mapPath, 0, 0);
+	}
+
+	public TextureAtlas(String imagePath, int tileWidth, int tileHeight) {
+		this(imagePath, null, tileWidth, tileHeight);
 	}
 
 	public Sprite getSprite(String name) {
