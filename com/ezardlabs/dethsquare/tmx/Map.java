@@ -11,21 +11,19 @@ public class Map {
     private int tileWidth;
     private int tileHeight;
 
-    private ArrayList<Layer> fgLayers;
-    private ArrayList<Layer> bgLayers;
-    private Layer mainLayer;
-
     private ArrayList<TileSet> tileSets;
+
+    private ArrayList<Layer> tileLayers;
+    private ArrayList<ObjectGroup> objectGroups;
 
     public Map(int width, int height, int tileWidth, int tileHeight) {
         this.width = width;
         this.height = height;
         this.tileWidth = tileWidth;
         this.tileHeight = tileHeight;
-        this.fgLayers = new ArrayList<>();
-        this.bgLayers = new ArrayList<>();
-        this.mainLayer = null;
         this.tileSets = new ArrayList<>();
+        this.tileLayers = new ArrayList<>();
+        this.objectGroups = new ArrayList<>();
     }
 
     public int getWidth() {
@@ -44,35 +42,27 @@ public class Map {
         return this.tileHeight;
     }
 
-    public ArrayList<Layer> getForegroundLayers() {
-        return this.fgLayers;
-    }
-
-    public ArrayList<Layer> getBackgroundLayers() {
-        return this.bgLayers;
-    }
-
-    public Layer getMainLayer() {
-        return this.mainLayer;
-    }
-
     public ArrayList<TileSet> getTileSets() {
         return this.tileSets;
     }
 
-    public void addForegroundLayer(Layer layer) {
-        this.fgLayers.add(layer);
+    public ArrayList<Layer> getTileLayers() {
+        return this.tileLayers;
     }
 
-    public void addBackgroundLayer(Layer layer) {
-        this.bgLayers.add(layer);
-    }
-
-    public void setMainLayer(Layer layer) {
-        this.mainLayer = layer;
+    public ArrayList<ObjectGroup> getObjectGroups() {
+        return this.objectGroups;
     }
 
     public void addTileSet(TileSet tileSet) {
         this.tileSets.add(tileSet);
+    }
+
+    public void addTileLayer(Layer layer) {
+        this.tileLayers.add(layer);
+    }
+
+    public void addObjectGroup(ObjectGroup objectGroup) {
+        this.objectGroups.add(objectGroup);
     }
 }

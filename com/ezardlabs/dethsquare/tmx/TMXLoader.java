@@ -27,7 +27,7 @@ public class TMXLoader {
 
     public void loadMap(String fileName) {
         try {
-            File mapFile = new File(Utils.assetsPath + "maps/" + fileName + ".tmx");
+            File mapFile = Utils.loadFile("maps/" + fileName + ".tmx");
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document doc = dBuilder.parse(mapFile);
@@ -69,7 +69,6 @@ public class TMXLoader {
 
             // Load tile layers
             NodeList tileLayers = root.getElementsByTagName("layer");
-            boolean isBackgroundLayer = true;
             for (int i = 0; i < tileLayers.getLength(); i++) {
                 Node node = tileLayers.item(i);
                 NamedNodeMap nodeAttrs = node.getAttributes();
@@ -92,19 +91,50 @@ public class TMXLoader {
                 if (tiles == null) {
                     throw new Exception("Cannot load tiles for layer: " + layerName);
                 }
-                Layer layer = new Layer(layerName, layerWidth, layerHeight, tiles);
-                if (layerName.equals("main")) {
-                    this.map.setMainLayer(layer);
-                    isBackgroundLayer = false;
-                } else if (isBackgroundLayer) {
-                    this.map.addBackgroundLayer(layer);
-                } else if (!isBackgroundLayer) {
-                    this.map.addForegroundLayer(layer);
-                }
+                this.map.addTileLayer(new Layer(layerName, layerWidth, layerHeight, tiles));
             }
 
             // Load object layers
-            NodeList objectGroups = doc.getElementsByTagName("objectgroup");
+            NodeList nodeListObjectGroups = doc.getElementsByTagName("objectgroup");
+            for(int i = 0; i < nodeListObjectGroups.getLength(); i++) {
+                Node nodeObjectGroup = nodeListObjectGroups.item(i);
+                NamedNodeMap objectGroupAttrs = nodeObjectGroup.getAttributes();
+                Node nodeObjectGroupName = objectGroupAttrs.getNamedItem("name");
+                String objectGroupName = "";
+                if(nodeObjectGroupName != null) {
+                    objectGroupName = nodeObjectGroupName.getNodeValue();
+                }
+                ArrayList<TMXObject> objects = new ArrayList<>();
+                NodeList nodeObjects = nodeObjectGroup.getChildNodes();
+                for(int j = 0; j < nodeObjects.getLength(); j++) {
+                    Node node = nodeObjects.item(j);
+                    if(!node.getNodeName().equals("object")) {
+                        continue;
+                    }
+                    NamedNodeMap attrs = node.getAttributes();
+                    Node nodeId = attrs.getNamedItem("id");
+                    int id = 0;
+                    if (nodeId != null) {
+                        id = Integer.parseUnsignedInt(nodeId.getNodeValue());
+                    }
+                    Node nodeName = attrs.getNamedItem("name");
+                    String name = "";
+                    if (nodeName != null) {
+                        name = nodeName.getNodeValue();
+                    }
+                    Node nodeType = attrs.getNamedItem("type");
+                    String type = "";
+                    if (nodeType != null) {
+                        type = nodeType.getNodeValue();
+                    }
+                    int x = Integer.parseInt(attrs.getNamedItem("x").getNodeValue());
+                    int y = Integer.parseInt(attrs.getNamedItem("y").getNodeValue());
+                    int width = Integer.parseInt(attrs.getNamedItem("width").getNodeValue());
+                    int height = Integer.parseInt(attrs.getNamedItem("height").getNodeValue());
+                    objects.add(new TMXObject(id, name, type, x, y, width, height));
+                }
+                map.addObjectGroup(new ObjectGroup(objectGroupName, objects.toArray(new TMXObject[objects.size()])));
+            }
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -146,8 +176,12 @@ public class TMXLoader {
                 imageHeight = Integer.parseInt(childAttrs.getNamedItem("height").getNodeValue());
             } else if(rootChildren.item(i).getNodeName().equals("tile")) {
                 NamedNodeMap childAttrs = rootChildren.item(i).getAttributes();
-//				int gid = Integer.parseInt(childAttrs.getNamedItem("gid").getNodeValue());
-//				tiles[gid] = new Tile(gid);
+                Node nodeGid = childAttrs.getNamedItem("gid");
+                if(nodeGid == null) {
+                    nodeGid = childAttrs.getNamedItem("id");
+                }
+				int gid = Integer.parseInt(nodeGid.getNodeValue());
+				tiles[gid] = new Tile(gid);
             }
         }
         TileSet tileSet = new TileSet(name, firstGid, tileWidth, tileHeight, tileCount);
@@ -165,8 +199,11 @@ public class TMXLoader {
                 Node node = childNodes.item(i);
                 NamedNodeMap attrs = node.getAttributes();
                 Node gid = childNodes.item(i).getAttributes().getNamedItem("gid");
+                if(gid == null) {
+                    gid = childNodes.item(i).getAttributes().getNamedItem("id");
+                }
 //				mapTiles[i / 2] = new Tile(Integer.parseInt(gid.getNodeValue()));
-                arrTiles.add(new Tile(Integer.parseInt(gid.getNodeValue())));
+                arrTiles.add(new Tile(Integer.parseUnsignedInt(gid.getNodeValue())));
             }
         }
         return arrTiles.toArray(new Tile[layerWidth * layerHeight]);
