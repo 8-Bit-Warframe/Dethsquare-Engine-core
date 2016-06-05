@@ -1,5 +1,7 @@
 package com.ezardlabs.dethsquare.tmx;
 
+import java.util.Properties;
+
 /**
  * Created by Benjamin on 2016-04-26.
  */
@@ -11,8 +13,9 @@ public class TMXObject {
     private int y;
     private int width;
     private int height;
+    private Properties properties;
 
-    public TMXObject(int id, String name, String type, int x, int y, int width, int height) {
+    public TMXObject(int id, String name, String type, int x, int y, int width, int height, Properties properties) {
         this.id = id;
         this.name = name;
         this.type = type;
@@ -20,6 +23,7 @@ public class TMXObject {
         this.y = y;
         this.width = width;
         this.height = height;
+        this.properties = properties;
     }
 
     public int getId() {
@@ -76,5 +80,17 @@ public class TMXObject {
 
     public void setHeight(int height) {
         this.height = height;
+    }
+
+    public String getProperty(String key) {
+        return this.properties.getProperty(key);
+    }
+
+    public String getProperty(String key, String defaultValue) {
+        return this.properties.getProperty(key, defaultValue);
+    }
+
+    public void setProperty(String key, String value) {
+        this.properties.setProperty(key, value);
     }
 }

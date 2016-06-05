@@ -7,6 +7,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Properties;
 
 /**
  * Created by Benjamin on 2016-04-16.
@@ -104,7 +105,7 @@ public class TMXLoader {
                 if(nodeObjectGroupName != null) {
                     objectGroupName = nodeObjectGroupName.getNodeValue();
                 }
-                ArrayList<TMXObject> objects = new ArrayList<>();
+                ArrayList<TMXObject> tmxObjects = new ArrayList<>();
                 NodeList nodeObjects = nodeObjectGroup.getChildNodes();
                 for(int j = 0; j < nodeObjects.getLength(); j++) {
                     Node node = nodeObjects.item(j);
@@ -131,9 +132,28 @@ public class TMXLoader {
                     int y = Integer.parseInt(attrs.getNamedItem("y").getNodeValue());
                     int width = Integer.parseInt(attrs.getNamedItem("width").getNodeValue());
                     int height = Integer.parseInt(attrs.getNamedItem("height").getNodeValue());
-                    objects.add(new TMXObject(id, name, type, x, y, width, height));
+                    Properties props = new Properties();
+                    if(node instanceof Element) {
+                        NodeList nlProperties = ((Element) node).getElementsByTagName("properties");
+                        if(nlProperties != null && nlProperties.getLength() > 0) {
+                            Node nodeProperties = nlProperties.item(0);
+                            NodeList nlPropItems = nodeProperties.getChildNodes();
+                            for(int k = 0; k < nlPropItems.getLength(); k++) {
+                                Node p = nlPropItems.item(k);
+                                if(p.getNodeName().equals("property")) {
+                                    NamedNodeMap pAttrs = p.getAttributes();
+                                    Node nodePropName = pAttrs.getNamedItem("name");
+                                    Node nodePropValue = pAttrs.getNamedItem("value");
+                                    if(nodePropName != null && nodePropValue != null) {
+                                        props.setProperty(nodePropName.getNodeValue(), nodePropValue.getNodeValue());
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    tmxObjects.add(new TMXObject(id, name, type, x, y, width, height, props));
                 }
-                map.addObjectGroup(new ObjectGroup(objectGroupName, objects.toArray(new TMXObject[objects.size()])));
+                map.addObjectGroup(new ObjectGroup(objectGroupName, tmxObjects.toArray(new TMXObject[tmxObjects.size()])));
             }
 
         } catch (Exception ex) {
