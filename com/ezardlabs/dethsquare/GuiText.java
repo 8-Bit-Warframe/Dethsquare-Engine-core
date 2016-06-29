@@ -97,6 +97,5 @@ public class GuiText extends Component {
 			total += (s.w / s.h) * fontSize;
 		}
 		spaceWidth = total / chars.length;
-		System.out.println("Calculated spaceWidth: " + spaceWidth);
 	}
 }
