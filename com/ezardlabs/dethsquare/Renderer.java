@@ -135,6 +135,15 @@ public class Renderer extends BoundedComponent {
 		qt.init(staticRenderers.toArray(new Renderer[staticRenderers.size()]));
 	}
 
+	static void destroyAllTextures() {
+		Utils.destroyAllTextures(textures);
+		textures.clear();
+	}
+
+	static void clearQuadTree() {
+		qt = new QuadTree<>(30);
+	}
+
 	private static ArrayList<Integer> idsRendered = new ArrayList<>();
 	private static int drawCalls = 0;
 
