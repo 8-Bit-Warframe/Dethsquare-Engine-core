@@ -75,6 +75,10 @@ public final class TextureAtlas {
 		return sprite;
 	}
 
+	public Sprite[] getSprites() {
+		return atlas.values().toArray(new Sprite[atlas.size()]);
+	}
+
 	public static class Sprite {
 		public float u;
 		public float v;

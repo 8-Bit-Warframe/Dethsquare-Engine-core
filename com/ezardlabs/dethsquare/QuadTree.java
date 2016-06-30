@@ -71,6 +71,7 @@ final class QuadTree<T extends BoundedComponent> {
 	}
 
 	final ArrayList<T> getVisibleObjects(ArrayList<T> returnObjects, QuadTree qt, Camera c) {
+		if (qt.bounds == null) return returnObjects;
 		if (c.bounds.contains(qt.bounds)) { // quad is completely inside camera
 			addAllChildren(returnObjects, qt);
 		}
