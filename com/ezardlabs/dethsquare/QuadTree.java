@@ -7,7 +7,7 @@ final class QuadTree<T extends BoundedComponent> {
 	private final int maxObjects;
 	private RectF bounds;
 	private ArrayList<T> objects = new ArrayList<>();
-	public QuadTree[] nodes = new QuadTree[4];
+	private QuadTree[] nodes = new QuadTree[4];
 
 	public QuadTree(int maxObjects) {
 		this.maxObjects = maxObjects;
@@ -19,7 +19,7 @@ final class QuadTree<T extends BoundedComponent> {
 	}
 
 	public static int getCount(QuadTree qt) {
-		if (qt.nodes[0] != null) {
+		if (!qt.isLeaf()) {
 			int count = 0;
 			for (QuadTree qt2 : qt.nodes) {
 				count += getCount(qt2);
@@ -53,7 +53,7 @@ final class QuadTree<T extends BoundedComponent> {
 
 	static <T extends BoundedComponent> ArrayList<T> retrieve(ArrayList<T> returnObjects,
 			QuadTree<T> qt, BoundedComponent bc) {
-		if (qt.nodes[0] != null) {
+		if (!qt.isLeaf()) {
 			for (QuadTree qt2 : qt.nodes) {
 				if (qt2.bounds.contains(bc.bounds)) {
 					return retrieve(returnObjects, qt2, bc);
@@ -71,11 +71,12 @@ final class QuadTree<T extends BoundedComponent> {
 	}
 
 	final ArrayList<T> getVisibleObjects(ArrayList<T> returnObjects, QuadTree qt, Camera c) {
+		if (qt.bounds == null) return returnObjects;
 		if (c.bounds.contains(qt.bounds)) { // quad is completely inside camera
 			addAllChildren(returnObjects, qt);
 		}
 		if (RectF.intersects(c.bounds, qt.bounds)) { // camera and quad are intersecting
-			if (qt.nodes[0] == null) {
+			if (qt.isLeaf()) {
 				returnObjects.addAll(qt.objects);
 			} else {
 				for (QuadTree qt2 : qt.nodes) {
@@ -87,7 +88,7 @@ final class QuadTree<T extends BoundedComponent> {
 	}
 
 	final void addAllChildren(ArrayList<T> returnObjects, QuadTree qt) {
-		if (qt.nodes[0] == null) {
+		if (qt.isLeaf()) {
 			returnObjects.addAll(qt.objects);
 		} else {
 			for (QuadTree qt2 : qt.nodes) {
@@ -98,7 +99,7 @@ final class QuadTree<T extends BoundedComponent> {
 
 	private void finalise(BoundedComponent[] items) {
 		objects.clear();
-		if (nodes[0] == null) {
+		if (isLeaf()) {
 			for (BoundedComponent bc : items) {
 				if (bounds.contains(bc.bounds) || RectF.intersects(bounds, bc.bounds)) {
 					objects.add((T) bc);
@@ -115,7 +116,7 @@ final class QuadTree<T extends BoundedComponent> {
 
 	private void insert(BoundedComponent bc) {
 		insertCount++;
-		if (nodes[0] != null) {
+		if (!isLeaf()) {
 			for (int i = 0; i < 4; i++) {
 				if (nodes[i].bounds.contains(bc.bounds)) {
 					nodes[i].insert(bc);
@@ -128,7 +129,7 @@ final class QuadTree<T extends BoundedComponent> {
 		} else {
 			objects.add((T) bc);
 			if (objects.size() > maxObjects) {
-				if (nodes[0] == null) split();
+				if (isLeaf()) split();
 				outer:
 				while (objects.size() > 0) {
 					for (int j = 0; j < 4; j++) {
@@ -160,5 +161,9 @@ final class QuadTree<T extends BoundedComponent> {
 		nodes[3] = new QuadTree(maxObjects,
 				new RectF(x + subWidth, y + subHeight, x + (subWidth * 2),
 						y + (subHeight * 2))); // bottom right
+	}
+
+	public boolean isLeaf() {
+		return nodes[0] == null;
 	}
 }
