@@ -70,7 +70,10 @@ public final class Input {
 		F9,
 		F10,
 		F11,
-		F12
+		F12,
+		MOUSE_LEFT,
+		MOUSE_RIGHT,
+		MOUSE_MIDDLE
 	}
 
 	private static class Holder {
