@@ -76,7 +76,7 @@ public class GuiText extends Component {
 					s = font.getSprite("period");
 					break;
 				default:
-					s = font.getSprite(String.valueOf(text.charAt(i)).toLowerCase());
+					s = font.getSprite(String.valueOf(text.charAt(i)));
 					break;
 			}
 			if (s == null) continue;
