@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public final class Input {
+	public static final Vector2 mousePosition = new Vector2();
+
 	public static Touch[] touches = new Touch[0];
 
 	/**
