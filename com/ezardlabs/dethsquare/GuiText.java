@@ -2,7 +2,7 @@ package com.ezardlabs.dethsquare;
 
 import com.ezardlabs.dethsquare.TextureAtlas.Sprite;
 
-public class GuiText extends Component {
+public class GuiText extends BoundedComponent {
 	private String text;
 	private TextureAtlas font;
 	private float fontSize;
@@ -62,7 +62,7 @@ public class GuiText extends Component {
 		Sprite s;
 		float xOffset = 0;
 		for (int i = 0; i < text.length(); i++) {
-			switch(text.charAt(i)) {
+			switch (text.charAt(i)) {
 				case ' ':
 					xOffset += spaceWidth;
 					continue;
@@ -84,10 +84,14 @@ public class GuiText extends Component {
 			float width = (s.w / s.h) * fontSize;
 
 			characters[i] = new GameObject(null, new GuiRenderer(font, s, width, fontSize));
-			GameObject.instantiate(characters[i], new Vector2(transform.position.x + xOffset, transform.position.y));
+			GameObject.instantiate(characters[i],
+					new Vector2(transform.position.x + xOffset, transform.position.y));
 
 			xOffset += width + Screen.scale * 6.25f;
 		}
+
+		bounds.set(transform.position.x, transform.position.y, transform.position.x + xOffset,
+				transform.position.y + fontSize);
 	}
 
 	private void calculateSpaceWidth() {
@@ -97,5 +101,14 @@ public class GuiText extends Component {
 			total += (s.w / s.h) * fontSize;
 		}
 		spaceWidth = total / chars.length;
+	}
+
+	public boolean hitTest(float x, float y) {
+		return x > bounds.left * Screen.scale && x < bounds.right * Screen.scale &&
+				y > bounds.top * Screen.scale && y < bounds.bottom * Screen.scale;
+	}
+
+	public boolean hitTest(Vector2 position) {
+		return hitTest(position.x, position.y);
 	}
 }
