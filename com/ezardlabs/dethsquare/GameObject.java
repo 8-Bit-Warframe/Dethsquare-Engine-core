@@ -35,10 +35,6 @@ public final class GameObject {
      */
 	private static final ArrayList<GameObject> objectsWithChangedComponents = new ArrayList<>();
 	/**
-	 * Whether or not to destroy all current {@link GameObject}s on the next frame
-	 */
-	private static boolean destroyAll = false;
-	/**
 	 * The name of the {@link GameObject}
 	 */
 	public String name;
@@ -268,18 +264,6 @@ public final class GameObject {
 	}
 
 	public static void updateAll() {
-		if (destroyAll) {
-			destroyAll = false;
-			objects.clear();
-			newObjects.clear();
-			destroyedObjects.clear();
-			objectsWithChangedComponents.clear();
-			scripts.clear();
-			Renderer.clearAll();
-			Renderer.clearQuadTree();
-			Renderer.destroyAllTextures();
-		}
-
 		handleCreationDestruction();
 
 		for (int i = 0; i < scripts.size(); i++) {
@@ -288,7 +272,14 @@ public final class GameObject {
 	}
 
 	public static void destroyAll() {
-		destroyAll = true;
+		objects.clear();
+		newObjects.clear();
+		destroyedObjects.clear();
+		objectsWithChangedComponents.clear();
+		scripts.clear();
+		Renderer.clearAll();
+		Renderer.clearQuadTree();
+		Renderer.destroyAllTextures();
 	}
 
 	/**
