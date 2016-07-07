@@ -13,6 +13,8 @@ public class LevelManager {
 	public static void loadLevel(String name) {
 		currentLevelName = name;
 
+		GameObject.destroyAll();
+
 		Level level = levels.get(name);
 		level.onLoad();
 
