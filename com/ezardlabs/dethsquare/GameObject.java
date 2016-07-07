@@ -4,7 +4,6 @@ import com.ezardlabs.dethsquare.Collider.Collision;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 
 /**
  * Base class for all entities in the game world
@@ -276,6 +275,7 @@ public final class GameObject {
 			destroyedObjects.clear();
 			objectsWithChangedComponents.clear();
 			scripts.clear();
+			Renderer.clearAll();
 			Renderer.clearQuadTree();
 			Renderer.destroyAllTextures();
 		}

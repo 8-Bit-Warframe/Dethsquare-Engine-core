@@ -135,6 +135,10 @@ public class Renderer extends BoundedComponent {
 		qt.init(staticRenderers.toArray(new Renderer[staticRenderers.size()]));
 	}
 
+	static void clearAll() {
+		renderers.clear();
+	}
+
 	static void destroyAllTextures() {
 		Utils.destroyAllTextures(textures);
 		textures.clear();
