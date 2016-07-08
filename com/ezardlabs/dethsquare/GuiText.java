@@ -7,7 +7,7 @@ public class GuiText extends BoundedComponent {
 	private TextureAtlas font;
 	private float fontSize;
 	private float spaceWidth;
-	private GameObject[] characters = new GameObject[0];
+	public GameObject[] characters = new GameObject[0];
 
 	public GuiText(String text, TextureAtlas font, float fontSize) {
 		this.text = text;
@@ -51,10 +51,12 @@ public class GuiText extends BoundedComponent {
 	}
 
 	private void generateRenderers() {
-		if (text == null) return;
+		if (text == null) text = "";
 
 		for (GameObject go : characters) {
-			GameObject.destroy(go);
+			if(go != null) {
+				GameObject.destroy(go);
+			}
 		}
 
 		characters = new GameObject[text.length()];
@@ -74,6 +76,9 @@ public class GuiText extends BoundedComponent {
 					break;
 				case '.':
 					s = font.getSprite("period");
+					break;
+				case ':':
+					s = font.getSprite("colon");
 					break;
 				default:
 					s = font.getSprite(String.valueOf(text.charAt(i)));
