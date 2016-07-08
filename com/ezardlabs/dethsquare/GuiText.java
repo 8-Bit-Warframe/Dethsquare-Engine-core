@@ -77,6 +77,9 @@ public class GuiText extends BoundedComponent {
 				case '.':
 					s = font.getSprite("period");
 					break;
+				case ':':
+					s = font.getSprite("colon");
+					break;
 				default:
 					s = font.getSprite(String.valueOf(text.charAt(i)));
 					break;
