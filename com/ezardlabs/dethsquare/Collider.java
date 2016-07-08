@@ -45,6 +45,13 @@ public final class Collider extends BoundedComponent {
 		qt.init(staticColliders.toArray(new Collider[staticColliders.size()]));
 	}
 
+	static void clearAll() {
+		normalColliders.clear();
+		staticColliders.clear();
+		triggerColliders.clear();
+		qt = new QuadTree<>(20);
+	}
+
 	public void start() {
 		if (gameObject.isStatic || gameObject.name.equals("Door")) staticColliders.add(this);
 		if (isTrigger) addTrigger();

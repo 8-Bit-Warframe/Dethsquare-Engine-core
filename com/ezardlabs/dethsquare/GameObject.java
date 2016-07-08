@@ -280,6 +280,7 @@ public final class GameObject {
 		Renderer.clearAll();
 		Renderer.clearQuadTree();
 		Renderer.destroyAllTextures();
+		Collider.clearAll();
 	}
 
 	/**
