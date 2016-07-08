@@ -6,6 +6,7 @@ import org.w3c.dom.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Properties;
 
@@ -28,10 +29,10 @@ public class TMXLoader {
 
     public void loadMap(String fileName) {
         try {
-            File mapFile = Utils.loadFile("maps/" + fileName + ".tmx");
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(mapFile);
+            Document doc = dBuilder.parse(Thread.currentThread().getContextClassLoader()
+                                 .getResourceAsStream("maps/" + fileName + ".tmx"));
             doc.getDocumentElement().normalize();
             Element root = doc.getDocumentElement();
             if (!root.getNodeName().equals("map")) {

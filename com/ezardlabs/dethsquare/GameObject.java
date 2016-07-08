@@ -1,6 +1,7 @@
 package com.ezardlabs.dethsquare;
 
 import com.ezardlabs.dethsquare.Collider.Collision;
+import com.ezardlabs.dethsquare.util.Utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -281,6 +282,7 @@ public final class GameObject {
 		Renderer.clearQuadTree();
 		Renderer.destroyAllTextures();
 		Collider.clearAll();
+		Utils.stopAllAudio();
 	}
 
 	/**
