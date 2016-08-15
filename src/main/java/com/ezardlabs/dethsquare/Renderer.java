@@ -1,6 +1,7 @@
 package com.ezardlabs.dethsquare;
 
 import com.ezardlabs.dethsquare.TextureAtlas.Sprite;
+import com.ezardlabs.dethsquare.util.GameListeners;
 import com.ezardlabs.dethsquare.util.Utils;
 
 import java.nio.ByteBuffer;
@@ -12,6 +13,12 @@ import java.util.Collections;
 import java.util.HashMap;
 
 public class Renderer extends BoundedComponent {
+	/**
+	 * Add hook into game loop
+	 */
+	static {
+		GameListeners.addRenderListener(Renderer::renderAll);
+	}
 	static HashMap<String, int[]> textures = new HashMap<>();
 
 	private static QuadTree<Renderer> qt = new QuadTree<>(30);
@@ -157,12 +164,13 @@ public class Renderer extends BoundedComponent {
 		drawCalls = 0;
 		visible.clear();
 		qt.getVisibleObjects(visible, qt, Camera.main);
+//		System.out.println(Camera.main.bounds);
 
 		visible.addAll(renderers); // TODO only add renderers that are visible
 		map.clear();
 		for (int i = 0; i < visible.size(); i++) {
 			if (map.size() == 0 || !map.containsKey(visible.get(i).getZIndex())) {
-				map.put(visible.get(i).getZIndex(), new ArrayList<Renderer>());
+				map.put(visible.get(i).getZIndex(), new ArrayList<>());
 			}
 			map.get(visible.get(i).getZIndex()).add(visible.get(i));
 		}
@@ -187,7 +195,9 @@ public class Renderer extends BoundedComponent {
 
 					setupRenderData(visible);
 
-					Utils.render(temp.get(i).textureName, vertexBuffer, uvBuffer, visible.size() * 6, indexBuffer);
+					Utils.render(temp.get(i).textureName, vertexBuffer, uvBuffer, visible.size()
+							* 6, indexBuffer, Camera.main.transform.position.x, Camera.main
+							.transform.position.y, Screen.scale);
 
 					drawCalls++;
 				}

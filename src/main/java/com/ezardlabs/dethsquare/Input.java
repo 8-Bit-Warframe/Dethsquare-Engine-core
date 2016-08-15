@@ -1,11 +1,66 @@
 package com.ezardlabs.dethsquare;
 
 import com.ezardlabs.dethsquare.Touch.TouchPhase;
+import com.ezardlabs.dethsquare.util.GameListeners;
+import com.ezardlabs.dethsquare.util.GameListeners.KeyListener;
+import com.ezardlabs.dethsquare.util.GameListeners.MouseListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public final class Input {
+	static {
+		GameListeners.addMouseListener(new MouseListener() {
+			@Override
+			public void onMove(int x, int y) {
+				mousePosition.set(x, y);
+			}
+
+			@Override
+			public void onButtonDown(int index) {
+				switch(index) {
+					case 1:
+						setKeyDown(KeyCode.MOUSE_LEFT);
+						break;
+					case 2:
+						setKeyDown(KeyCode.MOUSE_MIDDLE);
+						break;
+					case 3:
+						setKeyDown(KeyCode.MOUSE_RIGHT);
+						break;
+				}
+			}
+
+			@Override
+			public void onButtonUp(int index) {
+				switch(index) {
+					case 1:
+						setKeyUp(KeyCode.MOUSE_LEFT);
+						break;
+					case 2:
+						setKeyUp(KeyCode.MOUSE_MIDDLE);
+						break;
+					case 3:
+						setKeyUp(KeyCode.MOUSE_RIGHT);
+						break;
+				}
+			}
+		});
+		GameListeners.addKeyListener(new KeyListener() {
+			@Override
+			public void onKeyDown(String key) {
+				setKeyDown(KeyCode.valueOf(key));
+			}
+
+			@Override
+			public void onKeyUp(String key) {
+				setKeyUp(KeyCode.valueOf(key));
+			}
+		});
+
+		GameListeners.addUpdateListener(Input::update);
+	}
+
 	public static final Vector2 mousePosition = new Vector2();
 
 	public static Touch[] touches = new Touch[0];

@@ -1,6 +1,23 @@
 package com.ezardlabs.dethsquare;
 
+import com.ezardlabs.dethsquare.util.GameListeners;
+import com.ezardlabs.dethsquare.util.GameListeners.UpdateListener;
+
 public final class Time {
+	/**
+	 * Add hook into game loop
+	 */
+	static {
+		GameListeners.addUpdateListener(new UpdateListener() {
+			long last = 0;
+			@Override
+			public void onUpdate() {
+				long now = System.currentTimeMillis();
+				deltaTime = now - last;
+				last = now;
+			}
+		});
+	}
 	/**
 	 * The time in seconds it took to complete the last frame
 	 */

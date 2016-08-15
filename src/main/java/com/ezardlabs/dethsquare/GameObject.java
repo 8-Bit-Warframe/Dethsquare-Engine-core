@@ -1,6 +1,7 @@
 package com.ezardlabs.dethsquare;
 
 import com.ezardlabs.dethsquare.Collider.Collision;
+import com.ezardlabs.dethsquare.util.GameListeners;
 import com.ezardlabs.dethsquare.util.Utils;
 
 import java.util.ArrayList;
@@ -10,6 +11,12 @@ import java.util.HashMap;
  * Base class for all entities in the game world
  */
 public final class GameObject {
+	/**
+	 * Add hook into game loop
+	 */
+	static {
+		GameListeners.addUpdateListener(GameObject::updateAll);
+	}
 	/**
 	 * List of all {@link GameObject GameObjects} to be instantiated at the end of the current frame
 	 */

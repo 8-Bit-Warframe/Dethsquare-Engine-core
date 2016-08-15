@@ -1,14 +1,19 @@
 package com.ezardlabs.dethsquare.tmx;
 
 import com.ezardlabs.dethsquare.util.Utils;
-import org.w3c.dom.*;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Properties;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.File;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Properties;
 
 /**
  * Created by Benjamin on 2016-04-16.
