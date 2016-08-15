@@ -267,11 +267,11 @@ public final class GameObject {
 		}.start();
 	}
 
-	public static void startAll() {
+	static void startAll() {
 		handleCreationDestruction();
 	}
 
-	public static void updateAll() {
+	private static void updateAll() {
 		handleCreationDestruction();
 
 		for (int i = 0; i < scripts.size(); i++) {
@@ -279,7 +279,7 @@ public final class GameObject {
 		}
 	}
 
-	public static void destroyAll() {
+	static void destroyAll() {
 		objects.clear();
 		newObjects.clear();
 		destroyedObjects.clear();

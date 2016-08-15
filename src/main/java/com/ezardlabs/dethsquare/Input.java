@@ -226,11 +226,11 @@ public final class Input {
 		}
 	}
 
-	public static void setKeyDown(KeyCode keyCode) {
+	private static void setKeyDown(KeyCode keyCode) {
 		if (!keys.containsKey(keyCode)) keyChanges.put(keyCode, 0);
 	}
 
-	public static void setKeyUp(KeyCode keyCode) {
+	private static void setKeyUp(KeyCode keyCode) {
 		keyChanges.put(keyCode, 2);
 	}
 
