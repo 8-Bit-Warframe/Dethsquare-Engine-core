@@ -36,7 +36,7 @@ public class Renderer extends BoundedComponent {
 	private int xOffset;
 	private int yOffset;
 
-	public enum Mode {
+	private enum Mode {
 		NONE,
 		IMAGE,
 		SPRITE
@@ -160,7 +160,7 @@ public class Renderer extends BoundedComponent {
 
 	static HashMap<Integer, ArrayList<Renderer>> map = new HashMap<>();
 
-	public static void renderAll() {
+	private static void renderAll() {
 		drawCalls = 0;
 		visible.clear();
 		qt.getVisibleObjects(visible, qt, Camera.main);
