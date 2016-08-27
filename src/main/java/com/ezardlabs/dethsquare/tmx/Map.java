@@ -6,6 +6,8 @@ import java.util.ArrayList;
  * Created by Benjamin on 2016-04-09.
  */
 public class Map {
+    private String filePath;
+
     private int width;
     private int height;
     private int tileWidth;
@@ -16,7 +18,8 @@ public class Map {
     private ArrayList<Layer> tileLayers;
     private ArrayList<ObjectGroup> objectGroups;
 
-    public Map(int width, int height, int tileWidth, int tileHeight) {
+    public Map(String filePath, int width, int height, int tileWidth, int tileHeight) {
+        this.filePath = filePath;
         this.width = width;
         this.height = height;
         this.tileWidth = tileWidth;
@@ -24,6 +27,10 @@ public class Map {
         this.tileSets = new ArrayList<>();
         this.tileLayers = new ArrayList<>();
         this.objectGroups = new ArrayList<>();
+    }
+
+    public String getFilePath() {
+        return this.filePath;
     }
 
     public int getWidth() {

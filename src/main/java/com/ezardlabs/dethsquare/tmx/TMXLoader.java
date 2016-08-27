@@ -32,12 +32,20 @@ public class TMXLoader {
         return this.map;
     }
 
-    public void loadMap(String fileName) {
+    public void loadMap(String filePath) {
         try {
+            int lastSlash = filePath.lastIndexOf("/");
+            String folder = "";
+            String file = filePath;
+            if(lastSlash >= 0) {
+                folder = filePath.substring(0, lastSlash);
+                file = filePath.substring(lastSlash + 1, filePath.length());
+            }
+
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document doc = dBuilder.parse(Thread.currentThread().getContextClassLoader()
-                                 .getResourceAsStream("maps/" + fileName + ".tmx"));
+                                 .getResourceAsStream(filePath));
             doc.getDocumentElement().normalize();
             Element root = doc.getDocumentElement();
             if (!root.getNodeName().equals("map")) {
@@ -54,7 +62,7 @@ public class TMXLoader {
             int mapHeight = Integer.parseInt(rootAttrs.getNamedItem("height").getNodeValue());
             int mapTileWidth = Integer.parseInt(rootAttrs.getNamedItem("tilewidth").getNodeValue());
             int mapTileHeight = Integer.parseInt(rootAttrs.getNamedItem("tileheight").getNodeValue());
-            this.map = new Map(mapWidth, mapHeight, mapTileWidth, mapTileHeight);
+            this.map = new Map(filePath, mapWidth, mapHeight, mapTileWidth, mapTileHeight);
 
             // Load tileSets
             NodeList tileSetNodes = root.getElementsByTagName("tileset");
@@ -65,9 +73,9 @@ public class TMXLoader {
                 Node source = nodeAttrs.getNamedItem("source");
                 TileSet tileSet = null;
                 if (source == null) {
-                    tileSet = loadTMXTileSet(node, firstGid);
+                    tileSet = loadTMXTileSet(null, node, firstGid);
                 } else {
-                    tileSet = loadTMXTileSet(Utils.assetsPath + "/maps/" + source.getNodeValue(), firstGid);
+                    tileSet = loadTMXTileSet(folder + "/" + source.getNodeValue(), firstGid);
                 }
                 if (tileSet != null) {
                     this.map.addTileSet(tileSet);
@@ -167,23 +175,25 @@ public class TMXLoader {
         }
     }
 
-    public TileSet loadTMXTileSet(String name, int firstGid) {
+    public TileSet loadTMXTileSet(String filePath, int firstGid) {
         TileSet tileSet = null;
         try {
-            File tileSetFile = new File(name);
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(tileSetFile);
+            Document doc = dBuilder.parse(Thread.currentThread().getContextClassLoader()
+                    .getResourceAsStream(filePath));
             doc.getDocumentElement().normalize();
             Element root = doc.getDocumentElement();
-            tileSet = loadTMXTileSet(root, firstGid);
+            tileSet = loadTMXTileSet(filePath, root, firstGid);
         } catch(Exception ex) {
             ex.printStackTrace();
         }
         return tileSet;
     }
 
-    public TileSet loadTMXTileSet(Node root, int firstGid) {
+    public TileSet loadTMXTileSet(String filePath, Node root, int firstGid) {
+        if(filePath == null)
+            filePath = "";
         NamedNodeMap rootAttrs = root.getAttributes();
         String name = rootAttrs.getNamedItem("name").getNodeValue();
         int tileWidth = Integer.parseInt(rootAttrs.getNamedItem("tilewidth").getNodeValue());
@@ -210,7 +220,7 @@ public class TMXLoader {
 				tiles[gid] = new Tile(gid);
             }
         }
-        TileSet tileSet = new TileSet(name, firstGid, tileWidth, tileHeight, tileCount);
+        TileSet tileSet = new TileSet(filePath, name, firstGid, tileWidth, tileHeight, tileCount);
         tileSet.setImage(imageSource, imageWidth, imageHeight);
         return tileSet;
     }

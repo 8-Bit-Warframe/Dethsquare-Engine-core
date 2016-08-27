@@ -4,6 +4,7 @@ package com.ezardlabs.dethsquare.tmx;
  * Created by Benjamin on 2016-04-09.
  */
 public class TileSet {
+    private String filePath;
     private String name;
     private int firstGid;
     private int tileWidth;
@@ -15,7 +16,8 @@ public class TileSet {
 
     private Tile[] tiles;
 
-    public TileSet(String name, int firstGid, int tileWidth, int tileHeight, int tileCount) {
+    public TileSet(String filePath, String name, int firstGid, int tileWidth, int tileHeight, int tileCount) {
+        this.filePath = filePath;
         this.name = name;
         this.firstGid = firstGid;
         this.tileWidth = tileWidth;
@@ -30,6 +32,14 @@ public class TileSet {
         this.imageSource = imageSource;
         this.imageWidth = width;
         this.imageHeight = height;
+    }
+
+    public String getFilePath() {
+        return this.filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
     }
 
     public String getName() {
