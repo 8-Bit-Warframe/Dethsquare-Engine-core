@@ -1,14 +1,12 @@
 package com.ezardlabs.dethsquare.tmx;
 
-import com.ezardlabs.dethsquare.util.Utils;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.io.File;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Properties;
 
@@ -181,7 +179,7 @@ public class TMXLoader {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document doc = dBuilder.parse(Thread.currentThread().getContextClassLoader()
-                    .getResourceAsStream(filePath));
+                    .getResourceAsStream(new URI(filePath).normalize().getPath()));
             doc.getDocumentElement().normalize();
             Element root = doc.getDocumentElement();
             tileSet = loadTMXTileSet(filePath, root, firstGid);
