@@ -4,10 +4,8 @@ import com.ezardlabs.dethsquare.util.GameListeners;
 import com.ezardlabs.dethsquare.util.GameListeners.UpdateListener;
 
 public final class Time {
-	/**
-	 * Add hook into game loop
-	 */
 	static {
+		// Add hook into game loop
 		GameListeners.addUpdateListener(new UpdateListener() {
 			long last = 0;
 			@Override
@@ -15,6 +13,7 @@ public final class Time {
 				long now = System.currentTimeMillis();
 				deltaTime = now - last;
 				last = now;
+				frameCount++;
 			}
 		});
 	}
