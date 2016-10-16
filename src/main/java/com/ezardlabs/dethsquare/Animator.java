@@ -64,6 +64,14 @@ public final class Animator extends Script implements Iterable<Animation> {
 		else return animations[index];
 	}
 
+	public int getCurrentAnimationId() {
+		return index;
+	}
+
+	public int getCurrentAnimationFrame() {
+		return frame;
+	}
+
 	@Override
 	public Iterator<Animation> iterator() {
 		return new ObjectIterator<>(animations);
