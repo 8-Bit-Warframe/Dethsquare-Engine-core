@@ -307,10 +307,12 @@ public final class GameObject {
 
 	private static void handleCreationDestruction() {
 		for (GameObject gameObject : destroyedObjects) {
-			for (Component c : gameObject.components) {
-				c.destroy();
-				if (c instanceof Script) {
-					scripts.remove(c);
+			if (gameObject != null) {
+				for (Component c : gameObject.components) {
+					c.destroy();
+					if (c instanceof Script) {
+						scripts.remove(c);
+					}
 				}
 			}
 		}
