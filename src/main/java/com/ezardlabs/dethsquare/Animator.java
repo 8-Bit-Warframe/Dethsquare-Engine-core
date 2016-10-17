@@ -68,8 +68,16 @@ public final class Animator extends Script implements Iterable<Animation> {
 		return index;
 	}
 
+	public void setCurrentAnimationId(int animationId) {
+		index = animationId;
+	}
+
 	public int getCurrentAnimationFrame() {
 		return frame;
+	}
+
+	public void setCurrentAnimationFrame(int frame) {
+		this.frame = frame;
 	}
 
 	@Override
