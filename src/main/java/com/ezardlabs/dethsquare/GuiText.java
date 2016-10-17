@@ -50,6 +50,40 @@ public class GuiText extends BoundedComponent {
 		generateRenderers();
 	}
 
+	public float getWidth() {
+		float width = 0;
+		for (int i = 0; i < text.length(); i++) {
+			Sprite s;
+			switch (text.charAt(i)) {
+				case ' ':
+					width += spaceWidth;
+					continue;
+				case '!':
+					s = font.getSprite("exclamation-mark");
+					break;
+				case '?':
+					s = font.getSprite("question-mark");
+					break;
+				case '.':
+					s = font.getSprite("period");
+					break;
+				case ':':
+					s = font.getSprite("colon");
+					break;
+				default:
+					s = font.getSprite(String.valueOf(text.charAt(i)));
+					break;
+			}
+			if (s == null) continue;
+
+			System.out.println(text.charAt(i) + ": " + ((s.w / s.h) * fontSize));
+
+			width += (s.w / s.h) * fontSize + Screen.scale * 6.25f;
+		}
+		width -= Screen.scale * 6.25f;
+		return width;
+	}
+
 	private void generateRenderers() {
 		if (text == null) text = "";
 
