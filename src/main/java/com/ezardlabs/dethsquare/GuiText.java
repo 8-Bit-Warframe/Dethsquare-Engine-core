@@ -21,6 +21,13 @@ public class GuiText extends BoundedComponent {
 		generateRenderers();
 	}
 
+	@Override
+	protected void destroy() {
+		for (int i = 0; i < characters.length; i++) {
+			GameObject.destroy(characters[i], 1);
+		}
+	}
+
 	public String getText() {
 		return text;
 	}
