@@ -2,9 +2,6 @@ package com.ezardlabs.dethsquare;
 
 import com.ezardlabs.dethsquare.util.Utils;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 public final class AudioSource extends Component {
 	private final AudioClip initial;
 	private int current = -1;
@@ -38,12 +35,7 @@ public final class AudioSource extends Component {
 		if (initial != null) {
 			play(initial);
 			setLoop(loop);
-			new Timer().schedule(new TimerTask() {
-				@Override
-				public void run() {
-					setVolume(volume);
-				}
-			}, 100);
+			setVolume(volume);
 		}
 	}
 
