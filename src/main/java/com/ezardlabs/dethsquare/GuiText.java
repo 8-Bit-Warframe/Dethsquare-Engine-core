@@ -6,13 +6,19 @@ public class GuiText extends BoundedComponent {
 	private String text;
 	private TextureAtlas font;
 	private float fontSize;
+	private int zIndex;
 	private float spaceWidth;
 	public GameObject[] characters = new GameObject[0];
 
 	public GuiText(String text, TextureAtlas font, float fontSize) {
+		this(text, font, fontSize, 0);
+	}
+
+	public GuiText(String text, TextureAtlas font, float fontSize, int zIndex) {
 		this.text = text;
 		this.font = font;
 		this.fontSize = fontSize;
+		this.zIndex = zIndex;
 	}
 
 	@Override
@@ -127,7 +133,8 @@ public class GuiText extends BoundedComponent {
 
 			float width = (s.w / s.h) * fontSize;
 
-			characters[i] = new GameObject(null, new GuiRenderer(font, s, width, fontSize));
+			characters[i] = new GameObject(null, new GuiRenderer(font, s, width, fontSize)
+					.setzIndex(zIndex));
 			GameObject.instantiate(characters[i],
 					new Vector2(transform.position.x + xOffset, transform.position.y));
 
