@@ -83,8 +83,6 @@ public class GuiText extends BoundedComponent {
 			}
 			if (s == null) continue;
 
-			System.out.println(text.charAt(i) + ": " + ((s.w / s.h) * fontSize));
-
 			width += (s.w / s.h) * fontSize + Screen.scale * 6.25f;
 		}
 		width -= Screen.scale * 6.25f;
