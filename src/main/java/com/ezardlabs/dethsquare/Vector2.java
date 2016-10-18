@@ -29,6 +29,7 @@ public final class Vector2 {
 	 * @param y the new y component
 	 */
 	public void set(float x, float y) {
+		if (listener != null) listener.onVector2Changed(x - this.x, y - this.y);
 		this.x = x;
 		this.y = y;
 	}
@@ -40,6 +41,7 @@ public final class Vector2 {
 	 * @return The offset {@link Vector2}
 	 */
 	public Vector2 offset(float x, float y) {
+		if (listener != null) listener.onVector2Changed(x, y);
 		return new Vector2(this.x + x, this.y + y);
 	}
 
@@ -61,5 +63,15 @@ public final class Vector2 {
 	@Override
 	public boolean equals(Object o) {
 		return o instanceof Vector2 && ((Vector2) o).x == x && ((Vector2) o).y == y;
+	}
+
+	private Vector2ChangeListener listener;
+
+	void setVector2ChangeListener(Vector2ChangeListener listener) {
+		this.listener = listener;
+	}
+
+	interface Vector2ChangeListener {
+		void onVector2Changed(float xDiff, float yDiff);
 	}
 }
