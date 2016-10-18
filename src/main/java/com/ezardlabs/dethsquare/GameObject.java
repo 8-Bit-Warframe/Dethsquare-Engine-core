@@ -88,6 +88,8 @@ public final class GameObject {
 	 */
 	public Rigidbody rigidbody;
 
+	private boolean instantiated = false;
+
 	public GameObject() {
 		this(null);
 	}
@@ -102,7 +104,7 @@ public final class GameObject {
 		transform.gameObject = this;
 		this.components.add(transform);
 		for (Component c : components) {
-			addComponent(c);
+			addComponent(c, instantiated);
 		}
 	}
 
@@ -115,6 +117,20 @@ public final class GameObject {
 	 * @return The {@link Component} that has just been attached
 	 */
 	public <T extends Component> T addComponent(T component) {
+		return addComponent(component, instantiated);
+	}
+
+	/**
+	 * Attaches a {@link Component} to this {@link GameObject}. If a {@link Component} of the same
+	 * type is already present, then it is automatically replaced
+	 *
+	 * @param component The {@link Component} to attach to this {@link GameObject}
+	 * @param callStart Whether or not to call the {@link Component#start()} method on the newly
+	 *                     added {@link Component}
+	 * @param <T>       The type of the {@link Component}
+	 * @return The {@link Component} that has just been attached
+	 */
+	private <T extends Component> T addComponent(T component, boolean callStart) {
 		newComponents.add(component);
 		objectsWithChangedComponents.add(this);
 		return component;
@@ -238,6 +254,7 @@ public final class GameObject {
 	public static GameObject instantiate(GameObject gameObject, Vector2 position) {
 		gameObject.transform.position.set(position.x, position.y);
 		newObjects.add(gameObject);
+		objectsWithChangedComponents.add(gameObject);
 		return gameObject;
 	}
 
