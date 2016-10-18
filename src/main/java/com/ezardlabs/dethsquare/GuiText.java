@@ -8,6 +8,7 @@ public class GuiText extends BoundedComponent {
 	private float fontSize;
 	private int zIndex;
 	private float spaceWidth;
+	private float totalWidth = -1;
 	public GameObject[] characters = new GameObject[0];
 
 	public GuiText(String text, TextureAtlas font, float fontSize) {
@@ -64,6 +65,7 @@ public class GuiText extends BoundedComponent {
 	}
 
 	public float getWidth() {
+		if (totalWidth != -1) return totalWidth;
 		float width = 0;
 		for (int i = 0; i < text.length(); i++) {
 			Sprite s;
@@ -92,6 +94,7 @@ public class GuiText extends BoundedComponent {
 			width += (s.w / s.h) * fontSize + Screen.scale * 6.25f;
 		}
 		width -= Screen.scale * 6.25f;
+		totalWidth = width;
 		return width;
 	}
 
@@ -99,7 +102,7 @@ public class GuiText extends BoundedComponent {
 		if (text == null) text = "";
 
 		for (GameObject go : characters) {
-			if(go != null) {
+			if (go != null) {
 				GameObject.destroy(go);
 			}
 		}
@@ -141,6 +144,7 @@ public class GuiText extends BoundedComponent {
 
 			xOffset += width + Screen.scale * 6.25f;
 		}
+		totalWidth = xOffset - Screen.scale * 6.25f;
 
 		bounds.set(transform.position.x, transform.position.y, transform.position.x + xOffset,
 				transform.position.y + fontSize);
@@ -156,8 +160,10 @@ public class GuiText extends BoundedComponent {
 	}
 
 	public boolean hitTest(float x, float y) {
-		return x > bounds.left * Screen.scale && x < bounds.right * Screen.scale &&
-				y > bounds.top * Screen.scale && y < bounds.bottom * Screen.scale;
+		return x > transform.position.x * Screen.scale &&
+				x < (transform.position.x + totalWidth) * Screen.scale &&
+				y > transform.position.y * Screen.scale &&
+				y < (transform.position.y + fontSize) * Screen.scale;
 	}
 
 	public boolean hitTest(Vector2 position) {
