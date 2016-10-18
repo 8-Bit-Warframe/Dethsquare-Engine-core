@@ -135,6 +135,7 @@ public class GuiText extends BoundedComponent {
 
 			characters[i] = new GameObject(null, new GuiRenderer(font, s, width, fontSize)
 					.setzIndex(zIndex));
+			characters[i].transform.setParent(transform);
 			GameObject.instantiate(characters[i],
 					new Vector2(transform.position.x + xOffset, transform.position.y));
 
