@@ -257,6 +257,7 @@ public final class GameObject {
 		gameObject.transform.position.set(position.x, position.y);
 		newObjects.add(gameObject);
 		objectsWithChangedComponents.add(gameObject);
+		gameObject.instantiated = true;
 		return gameObject;
 	}
 
