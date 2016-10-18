@@ -132,7 +132,9 @@ public final class GameObject {
 	 */
 	private <T extends Component> T addComponent(T component, boolean callStart) {
 		newComponents.add(component);
-		objectsWithChangedComponents.add(this);
+		if (callStart) {
+			objectsWithChangedComponents.add(this);
+		}
 		return component;
 	}
 
