@@ -185,6 +185,7 @@ public class Network {
 		@Override
 		public void run() {
 			try (ObjectInputStream in = new ObjectInputStream(socket.getInputStream())) {
+				socket.setKeepAlive(true);
 				while (socket.isConnected()) {
 					String command = in.readUTF();
 					if (command.equals("instantiate")) {
