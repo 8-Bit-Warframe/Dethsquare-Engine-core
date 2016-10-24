@@ -6,8 +6,12 @@ import com.ezardlabs.dethsquare.Vector2;
 import com.ezardlabs.dethsquare.util.GameListeners;
 import com.ezardlabs.dethsquare.util.GameListeners.UpdateListener;
 
+import org.bitlet.weupnp.GatewayDevice;
+import org.bitlet.weupnp.GatewayDiscover;
+import org.bitlet.weupnp.PortMappingEntry;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -18,6 +22,8 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 public class Network {
 	static {
@@ -34,7 +40,7 @@ public class Network {
 	private static Socket[] tcp;
 	private static ServerSocket tcpIn;
 
-	private static int myPort = 8282;
+	private static int myPort = 2828;
 
 	private static int networkIdCounter = 0;
 
@@ -47,6 +53,33 @@ public class Network {
 
 	public static boolean isHost() {
 		return host;
+	}
+
+	private static void configureUPnP() throws ParserConfigurationException, SAXException, IOException {
+		GatewayDiscover discover = new GatewayDiscover();
+		System.out.println("Looking for Gateway Devices");
+		discover.discover();
+		GatewayDevice d = discover.getValidGateway();
+
+		PortMappingEntry pme = new PortMappingEntry();
+		if (!d.getSpecificPortMappingEntry(myPort, "UDP", pme)) {
+			System.out.println("UDP mapping does not already exist");
+			System.out.println("Adding UDP port mapping: " +
+					d.addPortMapping(myPort, myPort, d.getLocalAddress().getHostAddress(), "UDP",
+							"Lost Sector UDP"));
+		} else {
+			System.out.println("UDP mapping already exists");
+		}
+
+		pme = new PortMappingEntry();
+		if (!d.getSpecificPortMappingEntry(myPort + 1, "TCP", pme)) {
+			System.out.println("TCP mapping does not already exist");
+			System.out.println("Adding TCP port mapping: " +
+					d.addPortMapping(myPort + 1, myPort + 1, d.getLocalAddress().getHostAddress(),
+							"TCP", "Lost Sector TCP"));
+		} else {
+			System.out.println("TCP mapping already exists");
+		}
 	}
 
 	public static void findGame() {
