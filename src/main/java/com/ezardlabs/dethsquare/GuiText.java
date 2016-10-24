@@ -11,6 +11,8 @@ public class GuiText extends BoundedComponent {
 	private float totalWidth = -1;
 	public GameObject[] characters = new GameObject[0];
 
+	private boolean started = false;
+
 	public GuiText(String text, TextureAtlas font, float fontSize) {
 		this(text, font, fontSize, 0);
 	}
@@ -24,6 +26,7 @@ public class GuiText extends BoundedComponent {
 
 	@Override
 	public void start() {
+		started = true;
 		calculateSpaceWidth();
 		generateRenderers();
 	}
@@ -41,7 +44,7 @@ public class GuiText extends BoundedComponent {
 
 	public void setText(String text) {
 		this.text = text;
-		generateRenderers();
+		if (started) generateRenderers();
 	}
 
 	public TextureAtlas getFont() {
@@ -51,7 +54,7 @@ public class GuiText extends BoundedComponent {
 	public void setFont(TextureAtlas font) {
 		this.font = font;
 		calculateSpaceWidth();
-		generateRenderers();
+		if (started) generateRenderers();
 	}
 
 	public float getFontSize() {
@@ -61,7 +64,7 @@ public class GuiText extends BoundedComponent {
 	public void setFontSize(float fontSize) {
 		this.fontSize = fontSize;
 		calculateSpaceWidth();
-		generateRenderers();
+		if (started) generateRenderers();
 	}
 
 	public float getWidth() {
@@ -136,8 +139,8 @@ public class GuiText extends BoundedComponent {
 
 			float width = (s.w / s.h) * fontSize;
 
-			characters[i] = new GameObject(null, new GuiRenderer(font, s, width, fontSize)
-					.setzIndex(zIndex));
+			characters[i] = new GameObject(null,
+					new GuiRenderer(font, s, width, fontSize).setzIndex(zIndex));
 			characters[i].transform.setParent(transform);
 			GameObject.instantiate(characters[i],
 					new Vector2(transform.position.x + xOffset, transform.position.y));
