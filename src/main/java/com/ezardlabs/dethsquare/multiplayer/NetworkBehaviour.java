@@ -8,6 +8,7 @@ public abstract class NetworkBehaviour extends Component {
 	private static int networkIdCounter = 0;
 	int networkId;
 	protected int playerId;
+	protected final ByteBuffer data = ByteBuffer.allocate(getSize());
 
 	public NetworkBehaviour() {
 		this(networkIdCounter++, Network.getPlayerID());
