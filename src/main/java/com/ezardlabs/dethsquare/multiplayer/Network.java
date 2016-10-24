@@ -112,7 +112,7 @@ public class Network {
 				ports[i] = player.getInt("port");
 
 				try {
-					tcp[i] = new Socket(addresses[i], ports[i]);
+					tcp[i] = new Socket(addresses[i], ports[i] + 1);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
