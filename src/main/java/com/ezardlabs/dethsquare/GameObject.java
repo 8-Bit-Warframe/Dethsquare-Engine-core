@@ -87,7 +87,9 @@ public final class GameObject {
 	 * Fast access to this {@link GameObject}'s {@link Rigidbody} component
 	 */
 	public Rigidbody rigidbody;
-
+	/**
+	 * Whether or not this {@link GameObject} has been instantiated yet
+	 */
 	private boolean instantiated = false;
 
 	public GameObject() {
