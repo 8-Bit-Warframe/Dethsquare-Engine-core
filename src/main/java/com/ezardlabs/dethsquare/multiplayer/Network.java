@@ -3,6 +3,7 @@ package com.ezardlabs.dethsquare.multiplayer;
 import com.ezardlabs.dethsquare.GameObject;
 import com.ezardlabs.dethsquare.Time;
 import com.ezardlabs.dethsquare.Vector2;
+import com.ezardlabs.dethsquare.multiplayer.Network.NetworkStateChangeListener.State;
 import com.ezardlabs.dethsquare.util.GameListeners;
 import com.ezardlabs.dethsquare.util.GameListeners.UpdateListener;
 
@@ -32,6 +33,7 @@ public class Network {
 	}
 
 	private static UpdateListener updateListener;
+	private static NetworkStateChangeListener listener;
 
 	private static InetAddress[] addresses;
 	private static int[] ports;
@@ -40,7 +42,7 @@ public class Network {
 	private static Socket[] tcp;
 	private static ServerSocket tcpIn;
 
-	private static int myPort = 2828;
+	private static int myPort = 8282;
 
 	private static int networkIdCounter = 0;
 
@@ -82,16 +84,19 @@ public class Network {
 		}
 	}
 
-	public static void findGame() {
+	public static void findGame(NetworkStateChangeListener listener) {
+		Network.listener = listener;
 		new TCPServer().start();
 		MatchmakingThread mt = new MatchmakingThread();
 		updateListener = () -> checkIfGameFound(mt);
 		GameListeners.addUpdateListener(updateListener);
 		mt.start();
+		listener.onNetworkStateChanged(State.MATCHMAKING_SEARCHING);
 	}
 
 	private static void checkIfGameFound(MatchmakingThread mt) {
 		if (mt.data != null) {
+			listener.onNetworkStateChanged(State.MATCHMAKING_FOUND);
 			JSONObject data = new JSONObject(mt.data);
 			playerID = data.getInt("id");
 			host = data.getBoolean("host");
@@ -101,6 +106,8 @@ public class Network {
 			addresses = new InetAddress[peers.length()];
 			ports = new int[peers.length()];
 			tcp = new Socket[peers.length()];
+
+			listener.onNetworkStateChanged(State.GAME_CONNECTING);
 
 			for (int i = 0; i < peers.length(); i++) {
 				JSONObject player = peers.getJSONObject(i);
@@ -118,6 +125,8 @@ public class Network {
 				}
 			}
 
+			listener.onNetworkStateChanged(State.GAME_CONNECTED);
+
 			GameListeners.removeUpdateListener(updateListener);
 		}
 	}
@@ -133,7 +142,6 @@ public class Network {
 
 		@Override
 		public void run() {
-			System.out.println(myPort);
 			byte[] buffer = String.valueOf(myPort).getBytes();
 			try (DatagramSocket s = new DatagramSocket(myPort)) {
 				s.send(new DatagramPacket(buffer, buffer.length,
@@ -221,5 +229,16 @@ public class Network {
 	}
 
 	private static void processInstantiationRequest(byte[] data) {
+	}
+
+	public interface NetworkStateChangeListener {
+		enum State {
+			MATCHMAKING_SEARCHING,
+			MATCHMAKING_FOUND,
+			GAME_CONNECTING,
+			GAME_CONNECTED
+		}
+
+		void onNetworkStateChanged(State state);
 	}
 }
