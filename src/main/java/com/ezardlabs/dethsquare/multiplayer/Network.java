@@ -210,19 +210,21 @@ public class Network {
 	}
 
 	public static GameObject instantiate(GameObject gameObject,
-			Vector2 position) throws IOException {
+			Vector2 position) {
 		NetworkBehaviour nb = gameObject.getComponentOfType(NetworkBehaviour.class);
 		if (nb != null) {
 			nb.networkId = networkIdCounter++;
 			nb.playerId = playerID;
 		}
 		for (int i = 0; i < tcp.length; i++) {
-			ObjectOutputStream out = new ObjectOutputStream(tcp[i].getOutputStream());
-			out.writeUTF("instantiate");
-			out.writeFloat(position.x);
-			out.writeFloat(position.y);
-			out.writeObject(gameObject);
-			out.close();
+			try (ObjectOutputStream out = new ObjectOutputStream(tcp[i].getOutputStream())) {
+				out.writeUTF("instantiate");
+				out.writeFloat(position.x);
+				out.writeFloat(position.y);
+				out.writeObject(gameObject);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 
 		return gameObject;
