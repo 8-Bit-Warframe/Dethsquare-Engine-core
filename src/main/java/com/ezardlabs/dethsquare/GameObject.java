@@ -6,6 +6,7 @@ import com.ezardlabs.dethsquare.util.Utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Base class for all entities in the game world
@@ -169,6 +170,23 @@ public final class GameObject {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Get all {@link Component}s of the given type
+	 * @param type The type of the {@link Component}s to get
+	 * @param <T> The type to automatically cast the result to
+	 * @return All {@link Component}s of the given type
+	 */
+	public <T extends Component> List<T> getComponentsOfType(Class<T> type) {
+		List<T> list = new ArrayList<>();
+		for (Component c : components) {
+			if (type.isAssignableFrom(c.getClass())) {
+				//noinspection unchecked
+				list.add((T) c);
+			}
+		}
+		return list;
 	}
 
 	/**
