@@ -13,9 +13,7 @@ import java.util.List;
  * Base class for all entities in the game world
  */
 public final class GameObject implements Serializable {
-	/**
-	 * Add hook into game loop
-	 */
+	// Add hook into game loop
 	static {
 		GameListeners.addUpdateListener(GameObject::updateAll);
 	}
