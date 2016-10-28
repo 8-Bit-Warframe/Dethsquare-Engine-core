@@ -225,7 +225,7 @@ public final class GameObject implements Serializable {
 		} else {
 			if (this.tag == null) {
 				if (!tags.containsKey(tag)) {
-					tags.put(tag, new ArrayList<GameObject>());
+					tags.put(tag, new ArrayList<>());
 				}
 				tags.get(tag).add(this);
 			} else {
@@ -234,7 +234,7 @@ public final class GameObject implements Serializable {
 					tags.remove(this.tag);
 				}
 				if (!tags.containsKey(tag)) {
-					tags.put(tag, new ArrayList<GameObject>());
+					tags.put(tag, new ArrayList<>());
 				}
 				tags.get(tag).add(this);
 			}
