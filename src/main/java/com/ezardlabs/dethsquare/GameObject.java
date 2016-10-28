@@ -4,6 +4,7 @@ import com.ezardlabs.dethsquare.Collider.Collision;
 import com.ezardlabs.dethsquare.util.GameListeners;
 import com.ezardlabs.dethsquare.util.Utils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.List;
 /**
  * Base class for all entities in the game world
  */
-public final class GameObject {
+public final class GameObject implements Serializable {
 	/**
 	 * Add hook into game loop
 	 */
@@ -274,11 +275,12 @@ public final class GameObject {
      * @return The {@link GameObject} that was passed into this method as a parameter
      */
 	public static GameObject instantiate(GameObject gameObject, Vector2 position) {
-		gameObject.transform.position.set(position.x, position.y);
-		newObjects.add(gameObject);
-		objectsWithChangedComponents.add(gameObject);
-		gameObject.instantiated = true;
-		return gameObject;
+		GameObject go = gameObject.copy();
+		go.transform.position.set(position.x, position.y);
+		newObjects.add(go);
+		objectsWithChangedComponents.add(go);
+		go.instantiated = true;
+		return go;
 	}
 
     /**
@@ -414,5 +416,16 @@ public final class GameObject {
 		}
 
 		newObjects.clear();
+	}
+
+	private GameObject copy() {
+		GameObject gameObject = new GameObject(name, isStatic);
+		for (Component component : newComponents) {
+			gameObject.addComponent(component);
+		}
+		String tag = this.tag;
+		setTag(null);
+		gameObject.setTag(tag);
+		return gameObject;
 	}
 }
