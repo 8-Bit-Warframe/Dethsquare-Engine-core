@@ -1,5 +1,7 @@
 package com.ezardlabs.dethsquare;
 
+import com.ezardlabs.dethsquare.Vector2.Vector2ChangeListener;
+
 import java.util.ArrayList;
 
 /**
@@ -12,10 +14,13 @@ public final class Transform extends Component {
 	private ArrayList<Transform> children = new ArrayList<>();
 
 	Transform() {
-		position.setVector2ChangeListener((xDiff, yDiff) -> {
-			for (int i = 0; i < children.size(); i++) {
-				children.get(i).position.x += xDiff;
-				children.get(i).position.y += yDiff;
+		position.setVector2ChangeListener(new Vector2ChangeListener() {
+			@Override
+			public void onVector2Changed(float xDiff, float yDiff) {
+				for (int i = 0; i < children.size(); i++) {
+					children.get(i).position.x += xDiff;
+					children.get(i).position.y += yDiff;
+				}
 			}
 		});
 	}
