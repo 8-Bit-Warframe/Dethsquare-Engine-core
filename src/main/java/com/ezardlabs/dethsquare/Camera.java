@@ -3,9 +3,15 @@ package com.ezardlabs.dethsquare;
 public final class Camera extends Script {
 	public final RectF bounds = new RectF();
 	public static Camera main;
+	private boolean isMain = false;
 
 	public Camera(boolean main) {
-		if (main) Camera.main = this;
+		isMain = main;
+	}
+
+	@Override
+	public void start() {
+		if (isMain) main = this;
 	}
 
 	public void update() {
