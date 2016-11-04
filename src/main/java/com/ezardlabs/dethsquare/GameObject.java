@@ -192,11 +192,9 @@ public final class GameObject implements Serializable {
 	 */
 	public <T extends Component> List<T> getComponentsOfType(Class<T> type) {
 		//noinspection unchecked
-		Stream.concat(components.stream(), newComponents.stream())
+		return Stream.concat(components.stream(), newComponents.stream())
 			  .filter(c -> type.isAssignableFrom(c.getClass())).map(c -> (T) c)
 			  .collect(Collectors.toList());
-		return components.stream().filter(c -> type.isAssignableFrom(c.getClass())).map(c -> (T) c)
-						 .collect(Collectors.toList());
 	}
 
 	/**
