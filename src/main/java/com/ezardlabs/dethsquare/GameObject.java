@@ -8,6 +8,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Base class for all entities in the game world
@@ -151,6 +153,11 @@ public final class GameObject implements Serializable {
 				return type.cast(c);
 			}
 		}
+		for (Component c : newComponents) {
+			if (c.getClass().equals(type)) {
+				return type.cast(c);
+			}
+		}
 		return null;
 	}
 
@@ -167,24 +174,29 @@ public final class GameObject implements Serializable {
 				return (T) c;
 			}
 		}
+		for (Component c : newComponents) {
+			if (type.isAssignableFrom(c.getClass())) {
+				//noinspection unchecked
+				return (T) c;
+			}
+		}
 		return null;
 	}
 
 	/**
 	 * Get all {@link Component}s of the given type
+	 *
 	 * @param type The type of the {@link Component}s to get
-	 * @param <T> The type to automatically cast the result to
+	 * @param <T>  The type to automatically cast the result to
 	 * @return All {@link Component}s of the given type
 	 */
 	public <T extends Component> List<T> getComponentsOfType(Class<T> type) {
-		List<T> list = new ArrayList<>();
-		for (Component c : components) {
-			if (type.isAssignableFrom(c.getClass())) {
-				//noinspection unchecked
-				list.add((T) c);
-			}
-		}
-		return list;
+		//noinspection unchecked
+		Stream.concat(components.stream(), newComponents.stream())
+			  .filter(c -> type.isAssignableFrom(c.getClass())).map(c -> (T) c)
+			  .collect(Collectors.toList());
+		return components.stream().filter(c -> type.isAssignableFrom(c.getClass())).map(c -> (T) c)
+						 .collect(Collectors.toList());
 	}
 
 	/**
