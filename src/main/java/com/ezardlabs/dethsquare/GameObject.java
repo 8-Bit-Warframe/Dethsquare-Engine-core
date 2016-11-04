@@ -103,8 +103,7 @@ public final class GameObject implements Serializable {
 	public GameObject(String name, boolean isStatic, Component... components) {
 		this.name = name;
 		this.isStatic = isStatic;
-		transform.gameObject = this;
-		this.components.add(transform);
+		addComponent(transform, instantiated);
 		for (Component c : components) {
 			addComponent(c, instantiated);
 		}
@@ -273,8 +272,8 @@ public final class GameObject implements Serializable {
      * @return The {@link GameObject} that was passed into this method as a parameter
      */
 	public static GameObject instantiate(GameObject gameObject, Vector2 position) {
+		gameObject.transform.position.set(position.x, position.y);
 		GameObject go = gameObject.copy();
-		go.transform.position.set(position.x, position.y);
 		newObjects.add(go);
 		objectsWithChangedComponents.add(go);
 		go.instantiated = true;
