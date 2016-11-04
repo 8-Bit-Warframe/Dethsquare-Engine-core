@@ -11,7 +11,6 @@ public final class Vector2 {
 	 * Shorthand for writing Vector2(0, 0)
 	 */
 	public Vector2() {
-
 	}
 
 	/**
@@ -20,6 +19,14 @@ public final class Vector2 {
 	public Vector2(float x, float y) {
 		this.x = x;
 		this.y = y;
+	}
+
+	/**
+	 * Creates a new vector that has the same x and y values as the source vector
+	 */
+	public Vector2(Vector2 source) {
+		this.x = source.x;
+		this.y = source.y;
 	}
 
 	/**
