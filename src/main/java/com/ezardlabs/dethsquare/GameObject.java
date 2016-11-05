@@ -111,6 +111,13 @@ public final class GameObject implements Serializable {
 		}
 	}
 
+	private GameObject(String name, boolean isStatic, Transform transform) {
+		this.name = name;
+		this.isStatic = isStatic;
+		this.transform = transform;
+		addComponent(transform, instantiated);
+	}
+
 	/**
 	 * Attaches a {@link Component} to this {@link GameObject}. If a {@link Component} of the same
 	 * type is already present, then it is automatically replaced
@@ -134,6 +141,10 @@ public final class GameObject implements Serializable {
 	 * @return The {@link Component} that has just been attached
 	 */
 	private <T extends Component> T addComponent(T component, boolean callStart) {
+		if (getComponent(component.getClass()) != null) {
+			throw new Error("Component of type " + component.getClass() + " already exists on " +
+					"this GameObject");
+		}
 		newComponents.add(component);
 		if (callStart) {
 			objectsWithChangedComponents.add(this);
@@ -426,9 +437,9 @@ public final class GameObject implements Serializable {
 	}
 
 	private GameObject copy() {
-		GameObject gameObject = new GameObject(name, isStatic);
+		GameObject gameObject = new GameObject(name, isStatic, transform);
 		for (Component component : newComponents) {
-			gameObject.addComponent(component);
+			if (!(component instanceof Transform)) gameObject.addComponent(component);
 		}
 		String tag = this.tag;
 		setTag(null);
