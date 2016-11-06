@@ -6,6 +6,7 @@ public class NetworkAnimator extends NetworkBehaviour {
 
 	@Override
 	protected ByteBuffer onSend() {
+		data.position(0);
 		data.putInt(0, gameObject.animator.getCurrentAnimationId()); // 0 - 3
 		data.putInt(4, gameObject.animator.getCurrentAnimationFrame()); // 4 - 7
 		return data;

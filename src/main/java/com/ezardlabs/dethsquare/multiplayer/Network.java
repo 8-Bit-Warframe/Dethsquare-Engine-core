@@ -4,6 +4,7 @@ import com.ezardlabs.dethsquare.GameObject;
 import com.ezardlabs.dethsquare.Time;
 import com.ezardlabs.dethsquare.Vector2;
 import com.ezardlabs.dethsquare.multiplayer.Network.NetworkStateChangeListener.State;
+import com.ezardlabs.dethsquare.prefabs.PrefabManager;
 import com.ezardlabs.dethsquare.util.GameListeners;
 import com.ezardlabs.dethsquare.util.GameListeners.UpdateListener;
 
@@ -14,22 +15,29 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.xml.sax.SAXException;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 
 public class Network {
 	static {
 		// Add hook into game loop
-		GameListeners.addUpdateListener(Network::update);
+//		GameListeners.addUpdateListener(Network::update);
 	}
 
 	private static UpdateListener updateListener;
@@ -37,20 +45,25 @@ public class Network {
 
 	private static InetAddress[] addresses;
 	private static int[] ports;
-	private static DatagramSocket udpOut;
-	private static DatagramSocket udpIn;
-	private static Socket[] tcp;
+	private static UDPWriter udpOut;
+	private static UDPReader udpIn;
+	private static TCPWriter[] tcpOut;
 	private static ServerSocket tcpIn;
 
-	private static int myPort = 8282;
+	private static int myPort = 2828;
 
-	private static int networkIdCounter = 0;
-
-	private static int playerID;
+	private static int playerId = -1;
 	private static boolean host;
 
-	public static int getPlayerID() {
-		return playerID;
+	private static int networkIdCounter = -1;
+
+	public static int getPlayerId() {
+		return playerId;
+	}
+
+	static int getNewNetworkId() {
+		if (networkIdCounter == -1) throw new Error("Network ID counter has not been setup yet");
+		return networkIdCounter++;
 	}
 
 	public static boolean isHost() {
@@ -98,14 +111,14 @@ public class Network {
 		if (mt.data != null) {
 			listener.onNetworkStateChanged(State.MATCHMAKING_FOUND);
 			JSONObject data = new JSONObject(mt.data);
-			playerID = data.getInt("id");
+			playerId = data.getInt("id");
 			host = data.getBoolean("host");
 
 			JSONArray peers = data.getJSONArray("peers");
 
 			addresses = new InetAddress[peers.length()];
 			ports = new int[peers.length()];
-			tcp = new Socket[peers.length()];
+			tcpOut = new TCPWriter[peers.length()];
 
 			listener.onNetworkStateChanged(State.GAME_CONNECTING);
 
@@ -119,26 +132,67 @@ public class Network {
 				ports[i] = player.getInt("port");
 
 				try {
-					tcp[i] = new Socket(addresses[i], ports[i] + 1);
+					tcpOut[i] = new TCPWriter(new Socket(addresses[i], ports[i] + 1));
+					tcpOut[i].start();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
 
+			try {
+				DatagramSocket socket = new DatagramSocket(myPort);
+				udpOut = new UDPWriter(socket);
+				udpOut.start();
+				udpIn = new UDPReader(socket);
+				udpIn.start();
+			} catch (SocketException e) {
+				e.printStackTrace();
+			}
+
+			networkIdCounter = playerId * (Integer.MAX_VALUE / 4) + 1;
+
 			listener.onNetworkStateChanged(State.GAME_CONNECTED);
 
 			GameListeners.removeUpdateListener(updateListener);
+			GameListeners.addUpdateListener(Network::update);
 		}
 	}
 
 	private static void update() {
 		if (Time.frameCount % 2 == 0) {
-
+			ByteBuffer data = ByteBuffer.allocate(NetworkBehaviour.totalSize + (NetworkBehaviour
+					.myNetworkBehaviours.size() * 4));
+			for (NetworkBehaviour nb : NetworkBehaviour.myNetworkBehaviours.values()) {
+				data.putInt(nb.networkId);
+				data.put(nb.onSend());
+			}
+			udpOut.sendMessage(data.array());
+		}
+		synchronized (udpIn.udpMessages) {
+			while (udpIn.udpMessages.size() > 0) {
+				int count = 0;
+				ByteBuffer data = ByteBuffer.wrap(udpIn.udpMessages.remove(0));
+				NetworkBehaviour nb;
+				while (count < data.capacity()) {
+					data.position(count);
+					int networkId = data.getInt(count);
+					if (networkId == 0) break;
+					nb = NetworkBehaviour.otherNetworkBehaviours.get(networkId);
+					if (nb != null) {
+						nb.onReceive(data, count + 4);
+						count += nb.getSize() + 4;
+					}
+				}
+			}
 		}
 	}
 
 	private static class MatchmakingThread extends Thread {
 		private String data;
+
+		MatchmakingThread() {
+			super("MatchmakingThread");
+		}
 
 		@Override
 		public void run() {
@@ -156,12 +210,23 @@ public class Network {
 	}
 
 	private static class UDPReader extends Thread {
+		private final DatagramSocket socket;
+		final ArrayList<byte[]> udpMessages = new ArrayList<>();
+
+		UDPReader(DatagramSocket socket) {
+			super("UDPReader");
+			this.socket = socket;
+		}
+
 		@Override
 		public void run() {
-			try (DatagramSocket socket = new DatagramSocket(myPort)) {
-				DatagramPacket packet = new DatagramPacket(new byte[2014], 0);
+			try {
+				DatagramPacket packet = new DatagramPacket(new byte[4096], 4096);
 				while (true) {
 					socket.receive(packet);
+					synchronized (udpMessages) {
+						udpMessages.add(packet.getData());
+					}
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -169,7 +234,52 @@ public class Network {
 		}
 	}
 
+	private static class UDPWriter extends Thread {
+		private final DatagramSocket socket;
+		private final ArrayList<byte[]> messages = new ArrayList<>();
+		private final DatagramPacket[] packets = new DatagramPacket[addresses.length];
+
+		UDPWriter(DatagramSocket socket) {
+			super("UDPWriter");
+			this.socket = socket;
+			for (int i = 0; i < packets.length; i++) {
+				packets[i] = new DatagramPacket(new byte[0], 0, addresses[i], ports[i]);
+			}
+		}
+
+		@Override
+		public void run() {
+			try {
+				while (true) {
+					synchronized (messages) {
+						messages.wait();
+						while (messages.size() > 0) {
+							byte[] message = messages.remove(0);
+							for (int i = 0; i < addresses.length; i++) {
+								packets[i].setData(message);
+								socket.send(packets[i]);
+							}
+						}
+					}
+				}
+			} catch (IOException | InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+
+		void sendMessage(byte[] message) {
+			synchronized (messages) {
+				messages.add(message);
+				messages.notify();
+			}
+		}
+	}
+
 	private static class TCPServer extends Thread {
+
+		TCPServer() {
+			super("TCPServer");
+		}
 
 		@Override
 		public void run() {
@@ -187,50 +297,147 @@ public class Network {
 		private final Socket socket;
 
 		TCPReader(Socket socket) {
+			super("TCPReader");
 			this.socket = socket;
 		}
 
 		@Override
 		public void run() {
-			try (ObjectInputStream in = new ObjectInputStream(socket.getInputStream())) {
+			try (BufferedReader in = new BufferedReader(
+					new InputStreamReader(socket.getInputStream()))) {
 				socket.setKeepAlive(true);
 				while (socket.isConnected()) {
-					String command = in.readUTF();
-					if (command.equals("instantiate")) {
-						Vector2 position = new Vector2(in.readFloat(), in.readFloat());
-						GameObject gameObject = (GameObject) in.readObject();
-						GameObject.instantiate(gameObject, position);
+					String command = in.readLine();
+					if (command != null) {
+						if (command.equals("instantiate")) {
+							processInstantiation(in);
+						} else {
+							System.out.println("Unknown command:" + command);
+						}
 					}
 				}
 				in.close();
-			} catch (IOException | ClassNotFoundException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-	public static GameObject instantiate(GameObject gameObject,
-			Vector2 position) {
-		NetworkBehaviour nb = gameObject.getComponentOfType(NetworkBehaviour.class);
-		if (nb != null) {
-			nb.networkId = networkIdCounter++;
-			nb.playerId = playerID;
-		}
-		for (int i = 0; i < tcp.length; i++) {
-			try (ObjectOutputStream out = new ObjectOutputStream(tcp[i].getOutputStream())) {
-				out.writeUTF("instantiate");
-				out.writeFloat(position.x);
-				out.writeFloat(position.y);
-				out.writeObject(gameObject);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-
-		return gameObject;
 	}
 
-	private static void processInstantiationRequest(byte[] data) {
+	private static class TCPWriter extends Thread {
+		private final Socket socket;
+		private final ArrayList<String> messages = new ArrayList<>();
+
+		TCPWriter(Socket socket) {
+			super("TCPWriter");
+			this.socket = socket;
+		}
+
+		@Override
+		public void run() {
+			try (BufferedWriter out = new BufferedWriter(
+					new OutputStreamWriter(socket.getOutputStream()))) {
+				while (true) {
+					synchronized (messages) {
+						messages.wait();
+						while (messages.size() > 0) {
+							String s = messages.remove(0);
+							out.write(s);
+							out.flush();
+						}
+					}
+				}
+			} catch (IOException | InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+
+		void sendMessage(String message) {
+			synchronized (messages) {
+				messages.add(message);
+				messages.notify();
+			}
+		}
+	}
+
+	public static GameObject instantiate(String prefabName, Vector2 position) {
+		GameObject gameObject = PrefabManager.loadPrefab(prefabName);
+		List<NetworkBehaviour> networkBehaviours = gameObject
+				.getComponentsOfType(NetworkBehaviour.class);
+		HashMap<String, Integer> networkIds = new HashMap<>();
+		for (NetworkBehaviour nb : networkBehaviours) {
+			networkIds.put(nb.getClass().getCanonicalName(), nb.networkId);
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append("instantiate").append(System.lineSeparator());
+		if (PrefabManager.prefabExists(prefabName + "_other")) {
+			sb.append(prefabName).append("_other").append(System.lineSeparator());
+		} else {
+			sb.append(prefabName).append(System.lineSeparator());
+		}
+		sb.append(position.x).append(System.lineSeparator());
+		sb.append(position.y).append(System.lineSeparator());
+		sb.append(playerId).append(System.lineSeparator());
+		for (String key : networkIds.keySet()) {
+			sb.append(key).append(System.lineSeparator()).append(networkIds.get(key))
+			  .append(System.lineSeparator());
+		}
+		String message = sb.toString();
+		System.out.println(tcpOut.length);
+		for (TCPWriter writer : tcpOut) {
+			writer.sendMessage(message);
+		}
+
+//		for (int i = 0; i < tcp.length; i++) {
+//			try (BufferedWriter out = new BufferedWriter(
+//					new OutputStreamWriter(tcp[i].getOutputStream()))) {
+//				out.write("instantiate");
+//				out.newLine();
+//				if (PrefabManager.prefabExists(prefabName + "_other")) {
+//					out.write(prefabName + "_other");
+//				} else {
+//					out.write(prefabName);
+//				}
+//				out.newLine();
+//				out.write(String.valueOf(position.x));
+//				out.newLine();
+//				out.write(String.valueOf(position.y));
+//				out.newLine();
+//				out.write(String.valueOf(playerId));
+//				out.newLine();
+//				for (String key : networkIds.keySet()) {
+//					out.write(key);
+//					out.newLine();
+//					out.write(networkIds.get(key));
+//					out.newLine();
+//				}
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//		}
+		return GameObject.instantiate(gameObject, position);
+	}
+
+	private static void processInstantiation(BufferedReader in) throws IOException {
+		String name = in.readLine();
+		System.out.println(name);
+		GameObject gameObject = PrefabManager.loadPrefab(name);
+		Vector2 position = new Vector2(Float.parseFloat(in.readLine()),
+				Float.parseFloat(in.readLine()));
+		int playerId = Integer.parseInt(in.readLine());
+		List<NetworkBehaviour> networkBehaviours = gameObject
+				.getComponentsOfType(NetworkBehaviour.class);
+		HashMap<String, Integer> networkIds = new HashMap<>();
+		for (int i = 0; i < networkBehaviours.size(); i++) {
+			networkIds.put(in.readLine(), Integer.parseInt(in.readLine()));
+		}
+		System.out.println("Remote instantiation: " + name + " at " + position);
+		for (NetworkBehaviour nb : networkBehaviours) {
+			nb.playerId = playerId;
+			nb.networkId = networkIds.get(nb.getClass().getCanonicalName());
+			System.out.println("Remote instantiation: " + nb.getClass().getCanonicalName() + ", "
+					+ nb.networkId);
+		}
+		GameObject.instantiate(gameObject, position);
 	}
 
 	public interface NetworkStateChangeListener {

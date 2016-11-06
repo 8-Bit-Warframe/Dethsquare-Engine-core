@@ -3,16 +3,41 @@ package com.ezardlabs.dethsquare.multiplayer;
 import com.ezardlabs.dethsquare.Component;
 
 import java.nio.ByteBuffer;
+import java.util.HashMap;
 import java.util.Random;
 
 public abstract class NetworkBehaviour extends Component {
-	String networkId;
+	static HashMap<Integer, NetworkBehaviour> myNetworkBehaviours = new HashMap<>();
+	static HashMap<Integer, NetworkBehaviour> otherNetworkBehaviours = new HashMap<>();
+	static int totalSize = 0;
+	int networkId;
 	protected int playerId;
 	protected final ByteBuffer data = ByteBuffer.allocate(getSize());
 
 	public NetworkBehaviour() {
-		networkId = generateRandomId();
-		playerId = Network.getPlayerID();
+		networkId = Network.getNewNetworkId();
+		playerId = Network.getPlayerId();
+		if (playerId == -1) throw new Error("Player ID has not been set yet");
+	}
+
+	@Override
+	public void start() {
+		if (playerId == Network.getPlayerId()) {
+			myNetworkBehaviours.put(networkId, this);
+			totalSize += getSize();
+		} else {
+			otherNetworkBehaviours.put(networkId, this);
+		}
+	}
+
+	@Override
+	protected final void destroy() {
+		if (playerId == Network.getPlayerId()) {
+			myNetworkBehaviours.remove(networkId);
+			totalSize -= getSize();
+		} else {
+			otherNetworkBehaviours.remove(networkId);
+		}
 	}
 
 	private String generateRandomId() {
