@@ -10,8 +10,8 @@ public abstract class NetworkBehaviour extends Component {
 	static HashMap<Integer, NetworkBehaviour> myNetworkBehaviours = new HashMap<>();
 	static HashMap<Integer, NetworkBehaviour> otherNetworkBehaviours = new HashMap<>();
 	static int totalSize = 0;
-	int networkId;
-	protected int playerId = -1;
+	private int networkId;
+	private int playerId = -1;
 	protected final ByteBuffer data = ByteBuffer.allocate(getSize());
 
 	public NetworkBehaviour() {
@@ -38,6 +38,22 @@ public abstract class NetworkBehaviour extends Component {
 		} else {
 			otherNetworkBehaviours.remove(networkId);
 		}
+	}
+
+	void setNetworkId(int networkId) {
+		this.networkId = networkId;
+	}
+
+	public int getNetworkId() {
+		return networkId;
+	}
+
+	void setPlayerId(int playerId) {
+		this.playerId = playerId;
+	}
+
+	public int getPlayerId() {
+		return playerId;
 	}
 
 	private String generateRandomId() {

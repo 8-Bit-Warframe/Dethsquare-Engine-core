@@ -163,7 +163,7 @@ public class Network {
 			ByteBuffer data = ByteBuffer.allocate(NetworkBehaviour.totalSize + (NetworkBehaviour
 					.myNetworkBehaviours.size() * 4));
 			for (NetworkBehaviour nb : NetworkBehaviour.myNetworkBehaviours.values()) {
-				data.putInt(nb.networkId);
+				data.putInt(nb.getNetworkId());
 				data.put(nb.onSend());
 			}
 			udpOut.sendMessage(data.array());
@@ -365,7 +365,7 @@ public class Network {
 				.getComponentsOfType(NetworkBehaviour.class);
 		HashMap<String, Integer> networkIds = new HashMap<>();
 		for (NetworkBehaviour nb : networkBehaviours) {
-			networkIds.put(nb.getClass().getCanonicalName(), nb.networkId);
+			networkIds.put(nb.getClass().getCanonicalName(), nb.getNetworkId());
 		}
 		StringBuilder sb = new StringBuilder();
 		sb.append("instantiate").append(System.lineSeparator());
@@ -419,7 +419,6 @@ public class Network {
 
 	private static void processInstantiation(BufferedReader in) throws IOException {
 		String name = in.readLine();
-		System.out.println(name);
 		GameObject gameObject = PrefabManager.loadPrefab(name);
 		Vector2 position = new Vector2(Float.parseFloat(in.readLine()),
 				Float.parseFloat(in.readLine()));
@@ -430,12 +429,9 @@ public class Network {
 		for (int i = 0; i < networkBehaviours.size(); i++) {
 			networkIds.put(in.readLine(), Integer.parseInt(in.readLine()));
 		}
-		System.out.println("Remote instantiation: " + name + " at " + position);
 		for (NetworkBehaviour nb : networkBehaviours) {
-			nb.playerId = playerId;
-			nb.networkId = networkIds.get(nb.getClass().getCanonicalName());
-			System.out.println("Remote instantiation: " + nb.getClass().getCanonicalName() + ", "
-					+ nb.networkId);
+			nb.setPlayerId(playerId);
+			nb.setNetworkId(networkIds.get(nb.getClass().getCanonicalName()));
 		}
 		GameObject.instantiate(gameObject, position);
 	}
