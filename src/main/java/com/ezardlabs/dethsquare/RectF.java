@@ -386,6 +386,20 @@ public final class RectF {
 	}
 
 	/**
+	 * Returns true if this rectangle intersects the specified rectangle.
+	 * In no event is this rectangle modified. No check is performed to see
+	 * if either rectangle is empty. To record the intersection, use intersect()
+	 * or setIntersect().
+	 *
+	 * @param r      The rectangle being tested for intersection
+	 * @return true iff the specified rectangle intersects this rectangle. In
+	 * no event is this rectangle modified.
+	 */
+	public boolean intersects(RectF r) {
+		return this.left < r.right && r.left < this.right && this.top < r.bottom && r.top < this.bottom;
+	}
+
+	/**
 	 * Returns true iff the two specified rectangles intersect. In no event are
 	 * either of the rectangles modified. To record the intersection,
 	 * use intersect() or setIntersect().
