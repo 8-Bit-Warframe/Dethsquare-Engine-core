@@ -99,11 +99,24 @@ public final class GameObject implements Serializable {
 	}
 
 	public GameObject(String name, Component... components) {
-		this(name, false, components);
+		this(name, null, false, components);
+	}
+
+	public GameObject(String name, String tag) {
+		this(name, tag, false);
+	}
+
+	public GameObject(String name, String tag, Component... components) {
+		this(name, tag, false, components);
 	}
 
 	public GameObject(String name, boolean isStatic, Component... components) {
+		this(name, null, isStatic, components);
+	}
+
+	public GameObject(String name, String tag, boolean isStatic, Component... components) {
 		this.name = name;
+		this.tag = tag;
 		this.isStatic = isStatic;
 		addComponent(transform, instantiated);
 		for (Component c : components) {
