@@ -438,9 +438,9 @@ public final class GameObject implements Serializable {
 
 	private GameObject copy() {
 		GameObject gameObject = new GameObject(name, isStatic, transform);
-		for (Component component : newComponents) {
-			if (!(component instanceof Transform)) gameObject.addComponent(component);
-		}
+		Stream.concat(components.stream(), newComponents.stream()).forEach(c -> {
+			if (!(c instanceof Transform)) gameObject.addComponent(c);
+		});
 		String tag = this.tag;
 		setTag(null);
 		gameObject.setTag(tag);
