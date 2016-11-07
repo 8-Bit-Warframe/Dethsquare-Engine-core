@@ -11,7 +11,7 @@ public abstract class NetworkBehaviour extends Component {
 	static HashMap<Integer, NetworkBehaviour> otherNetworkBehaviours = new HashMap<>();
 	static int totalSize = 0;
 	int networkId;
-	protected int playerId;
+	protected int playerId = -1;
 	protected final ByteBuffer data = ByteBuffer.allocate(getSize());
 
 	public NetworkBehaviour() {
