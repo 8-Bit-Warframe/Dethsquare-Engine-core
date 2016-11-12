@@ -116,7 +116,7 @@ public final class GameObject implements Serializable {
 
 	public GameObject(String name, String tag, boolean isStatic, Component... components) {
 		this.name = name;
-		this.tag = tag;
+		setTag(tag);
 		this.isStatic = isStatic;
 		addComponent(transform, instantiated);
 		for (Component c : components) {
