@@ -33,8 +33,8 @@ public class Renderer extends BoundedComponent {
 
 	public int textureName = -1;
 	public Mode mode = Mode.NONE;
-	public int xOffset;
-	public int yOffset;
+	public float xOffset;
+	public float yOffset;
 
 	private enum Mode {
 		NONE,
@@ -82,7 +82,7 @@ public class Renderer extends BoundedComponent {
 		this.height = height;
 	}
 
-	public void setOffsets(int xOffset, int yOffset) {
+	public void setOffsets(float xOffset, float yOffset) {
 		this.xOffset = xOffset;
 		this.yOffset = yOffset;
 	}
