@@ -5,6 +5,11 @@ import java.nio.ByteBuffer;
 public class NetworkAnimator extends NetworkBehaviour {
 
 	@Override
+	public void start() {
+		assert gameObject.animator != null;
+	}
+
+	@Override
 	protected ByteBuffer onSend() {
 		data.position(0);
 		data.putInt(0, gameObject.animator.getCurrentAnimationId()); // 0 - 3
