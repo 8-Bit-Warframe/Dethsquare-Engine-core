@@ -12,7 +12,7 @@ public final class Animation {
 	public Animation(String name, Sprite[] frames, AnimationType type, long frameDuration) {
 		this.name = name;
 		this.frames = frames;
-		this.type = type;
+		this.type = (AnimationType) type.clone();
 		this.frameDuration = frameDuration;
 	}
 

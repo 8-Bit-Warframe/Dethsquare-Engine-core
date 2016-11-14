@@ -1,6 +1,6 @@
 package com.ezardlabs.dethsquare;
 
-public abstract class AnimationType {
+public abstract class AnimationType implements Cloneable {
 	/**
 	 * An animation that runs a single time, from start to end
 	 */
@@ -45,4 +45,14 @@ public abstract class AnimationType {
 	 * @return The next frame in the animation to go to
 	 */
 	public abstract int update(int currentFrame, int numFrames);
+
+	@Override
+	public Object clone() {
+		try {
+			return super.clone();
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+			return this;
+		}
+	}
 }
