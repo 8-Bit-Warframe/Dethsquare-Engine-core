@@ -7,6 +7,7 @@ public final class Collider extends BoundedComponent {
 	public static final ArrayList<Collider> staticColliders = new ArrayList<>();
 	public static final ArrayList<Collider> triggerColliders = new ArrayList<>();
 	public static QuadTree<Collider> qt = new QuadTree<>(20);
+	private static boolean inited = false;
 	public final RectF lastBounds = new RectF();
 	private final float height;
 	private final float width;
@@ -43,6 +44,7 @@ public final class Collider extends BoundedComponent {
 
 	public static void init() {
 		qt.init(staticColliders.toArray(new Collider[staticColliders.size()]));
+		inited = true;
 	}
 
 	static void clearAll() {
@@ -50,10 +52,16 @@ public final class Collider extends BoundedComponent {
 		staticColliders.clear();
 		triggerColliders.clear();
 		qt = new QuadTree<>(20);
+		inited = false;
 	}
 
 	public void start() {
-		if (gameObject.isStatic || gameObject.name.equals("Door")) staticColliders.add(this);
+		if (gameObject.isStatic) {
+			staticColliders.add(this);
+			if (inited) {
+				qt.init(staticColliders.toArray(new Collider[staticColliders.size()]));
+			}
+		}
 		if (isTrigger) addTrigger();
 		if (!gameObject.isStatic && !isTrigger) normalColliders.add(this);
 		if (gameObject.isStatic && !isTrigger) gameObject.setTag("solid");
