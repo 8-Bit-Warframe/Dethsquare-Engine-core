@@ -7,6 +7,7 @@ public final class Animator extends Script implements Iterable<Animation> {
 	private int index = -1;
 	private int frame = 0;
 	private long nextFrameTime = 0;
+	private boolean finished = false;
 	public boolean shouldUpdate = true;
 
 	public Animator(Animation... animations) {
@@ -37,10 +38,13 @@ public final class Animator extends Script implements Iterable<Animation> {
 			nextFrameTime += animations[index].frameDuration;
 			tempFrame = animations[index].type.update(frame, animations[index].frames.length);
 			if (tempFrame == -1) {
-				if (animations[index].listener != null) {
+				if (animations[index].listener != null && !finished) {
 					animations[index].listener.onAnimationFinished(this);
+					finished = true;
 				}
 				return;
+			} else {
+				finished = false;
 			}
 			frame = tempFrame;
 			try {
