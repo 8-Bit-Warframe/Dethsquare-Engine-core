@@ -52,10 +52,12 @@ public class Network {
 
 	private static int myPort = 2828;
 
-	private static int playerId = -1;
+	// TODO change back to -1 then make it work in singleplayer
+	private static int playerId = 0;
 	private static boolean host;
 
-	private static int networkIdCounter = -1;
+	//TODO change back to -1 then make it work in singleplayer
+	private static int networkIdCounter = 0;
 
 	public static int getPlayerId() {
 		return playerId;
