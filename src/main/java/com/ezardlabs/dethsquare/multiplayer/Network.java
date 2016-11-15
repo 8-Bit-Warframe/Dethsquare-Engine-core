@@ -31,6 +31,8 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -315,6 +317,8 @@ public class Network {
 					if (command != null) {
 						if (command.equals("instantiate")) {
 							processInstantiation(in);
+						} else if (command.equals("destroy")) {
+							processDestruction(in);
 						} else {
 							System.out.println("Unknown command:" + command);
 						}
@@ -440,6 +444,30 @@ public class Network {
 			nb.setNetworkId(networkIds.get(nb.getClass().getCanonicalName()));
 		}
 		GameObject.instantiate(gameObject, position);
+	}
+
+	public static void destroy(GameObject gameObject) {
+		GameObject.destroy(gameObject);
+		StringBuilder sb = new StringBuilder();
+		sb.append("destroy").append(System.lineSeparator());
+		sb.append(gameObject.networkId).append(System.lineSeparator());
+		String message = sb.toString();
+		for (TCPWriter writer : tcpOut) {
+			writer.sendMessage(message);
+		}
+	}
+
+	public static void destroy(GameObject gameObject, long delay) {
+		new Timer().schedule(new TimerTask() {
+			@Override
+			public void run() {
+				destroy(gameObject);
+			}
+		}, delay);
+	}
+
+	private static void processDestruction(BufferedReader in) throws IOException {
+		GameObject.destroy(Integer.parseInt(in.readLine()));
 	}
 
 	public interface NetworkStateChangeListener {

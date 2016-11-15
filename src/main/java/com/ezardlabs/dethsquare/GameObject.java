@@ -93,7 +93,7 @@ public final class GameObject implements Serializable {
 	 * The unique identifier for this {@link GameObject}; only used when instantiated across
 	 * the network
 	 */
-	public int networkId;
+	public int networkId = -1;
 	/**
 	 * Whether or not this {@link GameObject} has been instantiated yet
 	 */
@@ -345,6 +345,15 @@ public final class GameObject implements Serializable {
 		}.start();
 	}
 
+	/**
+	 * Removes the {@link GameObject} with the given network ID from the game world
+	 * @param networkId The network ID of the {@link GameObject} to remove from the game world
+	 */
+	public static void destroy(int networkId) {
+		if (networkId < 0) return;
+		objects.stream().filter(go -> go.networkId == networkId).forEach(GameObject::destroy);
+	}
+
 	static void startAll() {
 		handleCreationDestruction();
 	}
@@ -462,6 +471,7 @@ public final class GameObject implements Serializable {
 		String tag = this.tag;
 		setTag(null);
 		gameObject.setTag(tag);
+		gameObject.networkId = networkId;
 		return gameObject;
 	}
 }
