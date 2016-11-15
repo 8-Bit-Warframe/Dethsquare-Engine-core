@@ -11,7 +11,7 @@ public final class Collider extends BoundedComponent {
 	private final float height;
 	private final float width;
 	ArrayList<Collider> possible = new ArrayList<>();
-	private Collider[] triggers;
+	private Collider[] triggers = new Collider[0];
 	boolean isTrigger = false;
 
 	public enum CollisionLocation {
