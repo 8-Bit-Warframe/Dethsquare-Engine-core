@@ -448,12 +448,14 @@ public class Network {
 
 	public static void destroy(GameObject gameObject) {
 		GameObject.destroy(gameObject);
-		StringBuilder sb = new StringBuilder();
-		sb.append("destroy").append(System.lineSeparator());
-		sb.append(gameObject.networkId).append(System.lineSeparator());
-		String message = sb.toString();
-		for (TCPWriter writer : tcpOut) {
-			writer.sendMessage(message);
+		if (tcpOut != null) {
+			StringBuilder sb = new StringBuilder();
+			sb.append("destroy").append(System.lineSeparator());
+			sb.append(gameObject.networkId).append(System.lineSeparator());
+			String message = sb.toString();
+			for (TCPWriter writer : tcpOut) {
+				writer.sendMessage(message);
+			}
 		}
 	}
 
