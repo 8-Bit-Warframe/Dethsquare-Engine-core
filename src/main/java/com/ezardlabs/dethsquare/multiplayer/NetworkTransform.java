@@ -14,8 +14,11 @@ public class NetworkTransform extends NetworkBehaviour {
 
 	@Override
 	protected void onReceive(ByteBuffer data, int index) {
-		transform.position.x = data.getFloat(index);
-		transform.position.y = data.getFloat(index + 4);
+		transform.position.set(data.getFloat(index), data.getFloat(index + 4));
+		if (gameObject.collider != null) {
+			gameObject.collider.recalculateBounds();
+			gameObject.collider.triggerCheck();
+		}
 	}
 
 	@Override
