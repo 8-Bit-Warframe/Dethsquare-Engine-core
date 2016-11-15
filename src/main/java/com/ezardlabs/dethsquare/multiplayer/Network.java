@@ -365,6 +365,7 @@ public class Network {
 
 	public static GameObject instantiate(String prefabName, Vector2 position) {
 		GameObject gameObject = PrefabManager.loadPrefab(prefabName);
+		gameObject.networkId = getNewNetworkId();
 		if (tcpOut != null) {
 			List<NetworkBehaviour> networkBehaviours = gameObject.getComponentsOfType(NetworkBehaviour.class);
 			HashMap<String, Integer> networkIds = new HashMap<>();
@@ -378,6 +379,7 @@ public class Network {
 			} else {
 				sb.append(prefabName).append(System.lineSeparator());
 			}
+			sb.append(gameObject.networkId).append(System.lineSeparator());
 			sb.append(position.x).append(System.lineSeparator());
 			sb.append(position.y).append(System.lineSeparator());
 			sb.append(playerId).append(System.lineSeparator());
@@ -423,6 +425,7 @@ public class Network {
 	private static void processInstantiation(BufferedReader in) throws IOException {
 		String name = in.readLine();
 		GameObject gameObject = PrefabManager.loadPrefab(name);
+		gameObject.networkId = Integer.parseInt(in.readLine());
 		Vector2 position = new Vector2(Float.parseFloat(in.readLine()),
 				Float.parseFloat(in.readLine()));
 		int playerId = Integer.parseInt(in.readLine());

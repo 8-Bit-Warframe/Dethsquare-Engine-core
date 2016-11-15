@@ -90,6 +90,11 @@ public final class GameObject implements Serializable {
 	 */
 	public Rigidbody rigidbody;
 	/**
+	 * The unique identifier for this {@link GameObject}; only used when instantiated across
+	 * the network
+	 */
+	public int networkId;
+	/**
 	 * Whether or not this {@link GameObject} has been instantiated yet
 	 */
 	private boolean instantiated = false;
