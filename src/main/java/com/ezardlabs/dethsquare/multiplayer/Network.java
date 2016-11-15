@@ -56,7 +56,7 @@ public class Network {
 
 	// TODO change back to -1 then make it work in singleplayer
 	private static int playerId = 0;
-	private static boolean host;
+	private static boolean host = true;
 
 	//TODO change back to -1 then make it work in singleplayer
 	private static int networkIdCounter = 0;
