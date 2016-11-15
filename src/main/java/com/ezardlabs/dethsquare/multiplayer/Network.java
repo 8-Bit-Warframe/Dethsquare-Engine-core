@@ -363,30 +363,29 @@ public class Network {
 
 	public static GameObject instantiate(String prefabName, Vector2 position) {
 		GameObject gameObject = PrefabManager.loadPrefab(prefabName);
-		List<NetworkBehaviour> networkBehaviours = gameObject
-				.getComponentsOfType(NetworkBehaviour.class);
-		HashMap<String, Integer> networkIds = new HashMap<>();
-		for (NetworkBehaviour nb : networkBehaviours) {
-			networkIds.put(nb.getClass().getCanonicalName(), nb.getNetworkId());
-		}
-		StringBuilder sb = new StringBuilder();
-		sb.append("instantiate").append(System.lineSeparator());
-		if (PrefabManager.prefabExists(prefabName + "_other")) {
-			sb.append(prefabName).append("_other").append(System.lineSeparator());
-		} else {
-			sb.append(prefabName).append(System.lineSeparator());
-		}
-		sb.append(position.x).append(System.lineSeparator());
-		sb.append(position.y).append(System.lineSeparator());
-		sb.append(playerId).append(System.lineSeparator());
-		for (String key : networkIds.keySet()) {
-			sb.append(key).append(System.lineSeparator()).append(networkIds.get(key))
-			  .append(System.lineSeparator());
-		}
-		String message = sb.toString();
-		System.out.println(tcpOut.length);
-		for (TCPWriter writer : tcpOut) {
-			writer.sendMessage(message);
+		if (tcpOut != null) {
+			List<NetworkBehaviour> networkBehaviours = gameObject.getComponentsOfType(NetworkBehaviour.class);
+			HashMap<String, Integer> networkIds = new HashMap<>();
+			for (NetworkBehaviour nb : networkBehaviours) {
+				networkIds.put(nb.getClass().getCanonicalName(), nb.getNetworkId());
+			}
+			StringBuilder sb = new StringBuilder();
+			sb.append("instantiate").append(System.lineSeparator());
+			if (PrefabManager.prefabExists(prefabName + "_other")) {
+				sb.append(prefabName).append("_other").append(System.lineSeparator());
+			} else {
+				sb.append(prefabName).append(System.lineSeparator());
+			}
+			sb.append(position.x).append(System.lineSeparator());
+			sb.append(position.y).append(System.lineSeparator());
+			sb.append(playerId).append(System.lineSeparator());
+			for (String key : networkIds.keySet()) {
+				sb.append(key).append(System.lineSeparator()).append(networkIds.get(key)).append(System.lineSeparator());
+			}
+			String message = sb.toString();
+			for (TCPWriter writer : tcpOut) {
+				writer.sendMessage(message);
+			}
 		}
 
 //		for (int i = 0; i < tcp.length; i++) {
