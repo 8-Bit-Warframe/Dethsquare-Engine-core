@@ -48,7 +48,6 @@ public final class Vector2 {
 	 * @return The offset {@link Vector2}
 	 */
 	public Vector2 offset(float x, float y) {
-		if (listener != null) listener.onVector2Changed(x, y);
 		return new Vector2(this.x + x, this.y + y);
 	}
 
