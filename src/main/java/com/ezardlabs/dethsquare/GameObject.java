@@ -1,8 +1,8 @@
 package com.ezardlabs.dethsquare;
 
 import com.ezardlabs.dethsquare.Collider.Collision;
+import com.ezardlabs.dethsquare.util.AudioUtils;
 import com.ezardlabs.dethsquare.util.GameListeners;
-import com.ezardlabs.dethsquare.util.Utils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -376,7 +376,7 @@ public final class GameObject implements Serializable {
 		Renderer.clearQuadTree();
 		Renderer.destroyAllTextures();
 		Collider.clearAll();
-		Utils.stopAllAudio();
+		AudioUtils.stopAllAudio();
 	}
 
 	/**
