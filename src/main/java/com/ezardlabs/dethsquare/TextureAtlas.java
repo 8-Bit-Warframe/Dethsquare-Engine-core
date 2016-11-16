@@ -70,8 +70,7 @@ public final class TextureAtlas {
 	}
 
 	public Sprite getSprite(String name) {
-		if (!atlas.containsKey(name)) throw new Error("Sprite \"" + name + "\" not found in " +
-				mapPath);
+		if (!atlas.containsKey(name)) throw new SpriteNotFoundInAtlasError(name, mapPath);
 		Sprite sprite = atlas.get(name);
 		return sprite;
 	}
@@ -95,6 +94,13 @@ public final class TextureAtlas {
 
 		public String toString() {
 			return "Sprite(u: " + u + ", v: " + v + ", w: " + w + ", h: " + h + ")";
+		}
+	}
+
+	private static class SpriteNotFoundInAtlasError extends Error {
+
+		private SpriteNotFoundInAtlasError(String spriteName, String atlasPath) {
+			super("Sprite '" + spriteName + "' was not found in the atlas located at " + atlasPath);
 		}
 	}
 }
