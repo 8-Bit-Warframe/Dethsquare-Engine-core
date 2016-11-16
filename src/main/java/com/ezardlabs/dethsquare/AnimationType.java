@@ -32,9 +32,9 @@ public abstract class AnimationType implements Cloneable {
 	public static final AnimationType LOOP = new AnimationType() {
 		@Override
 		public int update(int currentFrame, int numFrames) {
-			currentFrame++;
-			if (currentFrame == numFrames) currentFrame = 0;
-			return currentFrame;
+			int frame = currentFrame + 1;
+			if (frame == numFrames) frame = 0;
+			return frame;
 		}
 	};
 
