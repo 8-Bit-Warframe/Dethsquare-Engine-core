@@ -1,5 +1,6 @@
 package com.ezardlabs.dethsquare;
 
+import com.ezardlabs.dethsquare.util.RenderUtils;
 import com.ezardlabs.dethsquare.util.Utils;
 
 import java.io.BufferedReader;
@@ -22,7 +23,7 @@ public final class TextureAtlas {
 		if (Renderer.textures.containsKey(imagePath)) {
 			data = Renderer.textures.get(imagePath);
 		} else {
-			data = Utils.loadImage(imagePath);
+			data = RenderUtils.loadImage(imagePath);
 			Renderer.textures.put(imagePath, data);
 		}
 

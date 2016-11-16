@@ -2,7 +2,7 @@ package com.ezardlabs.dethsquare;
 
 import com.ezardlabs.dethsquare.TextureAtlas.Sprite;
 import com.ezardlabs.dethsquare.util.GameListeners;
-import com.ezardlabs.dethsquare.util.Utils;
+import com.ezardlabs.dethsquare.util.RenderUtils;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -65,7 +65,7 @@ public class Renderer extends BoundedComponent {
 		if (textures.containsKey(imagePath)) {
 			textureName = textures.get(imagePath)[0];
 		} else {
-			int[] data = Utils.loadImage(imagePath);
+			int[] data = RenderUtils.loadImage(imagePath);
 			textures.put(imagePath, data);
 			textureName = data[0];
 		}
@@ -147,7 +147,7 @@ public class Renderer extends BoundedComponent {
 	}
 
 	static void destroyAllTextures() {
-		Utils.destroyAllTextures(textures);
+		RenderUtils.destroyAllTextures(textures);
 		textures.clear();
 	}
 
@@ -195,7 +195,7 @@ public class Renderer extends BoundedComponent {
 
 					setupRenderData(visible);
 
-					Utils.render(temp.get(i).textureName, vertexBuffer, uvBuffer, visible.size()
+					RenderUtils.render(temp.get(i).textureName, vertexBuffer, uvBuffer, visible.size()
 							* 6, indexBuffer, Camera.main.transform.position.x, Camera.main
 							.transform.position.y, Screen.scale);
 
