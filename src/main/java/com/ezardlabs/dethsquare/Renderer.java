@@ -23,6 +23,7 @@ public class Renderer extends BoundedComponent {
 	private static ArrayList<Renderer> renderers = new ArrayList<>();
 
 	private static ArrayList<Integer> idsRendered = new ArrayList<>();
+	private static HashMap<Integer, ArrayList<Renderer>> map = new HashMap<>();
 
 	private static ArrayList<Renderer> visible = new ArrayList<>();
 
@@ -163,8 +164,6 @@ public class Renderer extends BoundedComponent {
 	static void clearQuadTree() {
 		qt = new QuadTree<>(30);
 	}
-
-	static HashMap<Integer, ArrayList<Renderer>> map = new HashMap<>();
 
 	private static void renderAll() {
 		visible.clear();
