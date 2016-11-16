@@ -298,9 +298,9 @@ public final class GameObject implements Serializable {
 		}
 	}
 
-	void onCollision(Collider other, Collision collision) {
+	void onCollision(Collision collision) {
 		for (int i = 0; i < components.size(); i++) {
-			components.get(i).onCollision(other, collision);
+			components.get(i).onCollision(collision);
 		}
 	}
 

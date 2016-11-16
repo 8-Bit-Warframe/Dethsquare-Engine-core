@@ -23,10 +23,37 @@ public final class Collider extends BoundedComponent {
 	}
 
 	public class Collision {
-		public CollisionLocation location;
-		public float speed;
+		/**
+		 * The {@link Collider} that was hit
+		 */
+		public final Collider collider;
+		/**
+		 * The {@link GameObject} of the {@link Collider} that was hit
+		 */
+		public final GameObject gameObject;
+		/**
+		 * The side of the {@link Collider} that was involved in the collision
+		 */
+		public final CollisionLocation location;
+		/**
+		 * The speed at which the collision occurred
+		 */
+		public final float speed;
+		/**
+		 * The {@link Transform} of the {@link Collider} that was hit
+		 */
+		public final Transform transform;
+		/**
+		 * The {@link Rigidbody} of the {@link Collider} that was hit
+		 */
+		public final Rigidbody rigidbody;
 
-		public Collision(CollisionLocation location, float speed) {
+		Collision(Collider collider, GameObject gameObject, Transform transform,
+				Rigidbody rigidbody, CollisionLocation location, float speed) {
+			this.collider = collider;
+			this.gameObject = gameObject;
+			this.transform = transform;
+			this.rigidbody = rigidbody;
 			this.location = location;
 			this.speed = speed;
 		}
@@ -119,12 +146,15 @@ public final class Collider extends BoundedComponent {
 				if (c != this && c != null && !c.isTrigger && RectF.intersects(bounds, c.bounds)) {
 					if (y > 0 && bounds.bottom > c.bounds.top) {
 						transform.position.y = Math.round(c.bounds.top - bounds.height());
-						gameObject.onCollision(c, new Collision(CollisionLocation.BOTTOM, y));
+						gameObject.onCollision(
+								new Collision(c, c.gameObject, c.transform, c.gameObject.rigidbody,
+										CollisionLocation.BOTTOM, y));
 						if (gameObject.rigidbody != null) gameObject.rigidbody.velocity.y = 0;
 					} else if (y < 0 && bounds.top < c.bounds.bottom) {
 						transform.position.y = Math.round(c.bounds.bottom);
 						if (transform.position.y != lastBounds.top) {
-							gameObject.onCollision(c, new Collision(CollisionLocation.TOP, y));
+							gameObject.onCollision(new Collision(c, c.gameObject, c.transform,
+									c.gameObject.rigidbody, CollisionLocation.TOP, y));
 						}
 						gameObject.rigidbody.velocity.y = 0;
 					}
@@ -139,12 +169,14 @@ public final class Collider extends BoundedComponent {
 					if (x > 0 && bounds.right > c.bounds.left) {
 						transform.position.x = Math.round(c.bounds.left - bounds.width());
 						if (transform.position.x != lastBounds.left) {
-							gameObject.onCollision(c, new Collision(CollisionLocation.RIGHT, x));
+							gameObject.onCollision(new Collision(c, c.gameObject, c.transform,
+									c.gameObject.rigidbody, CollisionLocation.RIGHT, x));
 						}
 					} else if (x < 0 && bounds.left < c.bounds.right) {
 						transform.position.x = Math.round(c.bounds.right);
 						if (transform.position.x != lastBounds.left) {
-							gameObject.onCollision(c, new Collision(CollisionLocation.LEFT, x));
+							gameObject.onCollision(new Collision(c, c.gameObject, c.transform,
+									c.gameObject.rigidbody, CollisionLocation.LEFT, x));
 						}
 					}
 					recalculateBounds();

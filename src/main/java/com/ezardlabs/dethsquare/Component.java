@@ -29,9 +29,18 @@ public class Component {
     protected void destroy() {
     }
 
+	/**
+	 * Called when the {@link Collider} other enters the trigger
+	 *
+	 * @param other The other {@link Collider} involved in the collision
+	 */
 	public void onTriggerEnter(Collider other) {
 	}
 
-	public void onCollision(Collider other, Collision collision) {
+	/**
+	 * Called when this {@link Component}'s {@link Collider} collides with another {@link Collider}
+	 * @param collision the {@link Collision} data associated with this collision
+	 */
+	public void onCollision(Collision collision) {
 	}
 }
