@@ -45,7 +45,6 @@ public class Network {
 	private static UDPWriter udpOut;
 	private static UDPReader udpIn;
 	private static TCPWriter[] tcpOut;
-	private static ServerSocket tcpIn;
 
 	private static int myPort = 2828;
 
