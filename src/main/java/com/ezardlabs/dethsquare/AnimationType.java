@@ -7,7 +7,7 @@ public abstract class AnimationType implements Cloneable {
 	public static final AnimationType ONE_SHOT = new AnimationType() {
 		@Override
 		public int update(int currentFrame, int numFrames) {
-			if (currentFrame < numFrames - 1) return ++currentFrame;
+			if (currentFrame < numFrames - 1) return currentFrame + 1;
 			else return -1;
 		}
 	};
