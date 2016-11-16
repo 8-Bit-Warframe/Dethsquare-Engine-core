@@ -58,7 +58,7 @@ public final class Transform extends Component {
 	 * @param y
 	 */
 	public void translate(float x, float y) {
-		if (gameObject.isStatic) throw new Error("Static objects cannot be moved");
+		if (gameObject.isStatic) throw new StaticObjectMovedError(gameObject);
 		if (x == 0 && y == 0) return;
 		if (gameObject.collider != null) {
 			gameObject.collider.move(x, y);
@@ -68,6 +68,14 @@ public final class Transform extends Component {
 		}
 		for (int i = 0; i < children.size(); i++) {
 			children.get(i).translate(x, y);
+		}
+	}
+
+	private static class StaticObjectMovedError extends Error {
+
+		private StaticObjectMovedError(GameObject staticGameObject) {
+			super("Tried to move GameObject '" + staticGameObject.name + "', but it is " +
+					"marked as static and static objects cannot be moved");
 		}
 	}
 }
