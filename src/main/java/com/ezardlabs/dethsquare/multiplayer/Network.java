@@ -37,11 +37,6 @@ import java.util.TimerTask;
 import javax.xml.parsers.ParserConfigurationException;
 
 public class Network {
-	static {
-		// Add hook into game loop
-//		GameListeners.addUpdateListener(Network::update);
-	}
-
 	private static UpdateListener updateListener;
 	private static NetworkStateChangeListener listener;
 
