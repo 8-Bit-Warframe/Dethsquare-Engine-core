@@ -13,9 +13,7 @@ import java.util.Collections;
 import java.util.HashMap;
 
 public class Renderer extends BoundedComponent {
-	/**
-	 * Add hook into game loop
-	 */
+	// Add hook into game loop
 	static {
 		GameListeners.addRenderListener(Renderer::renderAll);
 	}
@@ -23,6 +21,17 @@ public class Renderer extends BoundedComponent {
 
 	private static QuadTree<Renderer> qt = new QuadTree<>(30);
 	private static ArrayList<Renderer> renderers = new ArrayList<>();
+
+	private static ArrayList<Integer> idsRendered = new ArrayList<>();
+
+	private static ArrayList<Renderer> visible = new ArrayList<>();
+
+	private static float[] vertices = new float[0];
+	private static short[] indices = new short[0];
+	private static float[] uvs = new float[0];
+	private static FloatBuffer vertexBuffer;
+	private static ShortBuffer indexBuffer;
+	private static FloatBuffer uvBuffer;
 
 	Sprite sprite;
 	public float width;
@@ -155,16 +164,11 @@ public class Renderer extends BoundedComponent {
 		qt = new QuadTree<>(30);
 	}
 
-	private static ArrayList<Integer> idsRendered = new ArrayList<>();
-	private static int drawCalls = 0;
-
 	static HashMap<Integer, ArrayList<Renderer>> map = new HashMap<>();
 
 	private static void renderAll() {
-		drawCalls = 0;
 		visible.clear();
 		qt.getVisibleObjects(visible, qt, Camera.main);
-//		System.out.println(Camera.main.bounds);
 
 		visible.addAll(renderers); // TODO only add renderers that are visible
 		map.clear();
@@ -198,22 +202,10 @@ public class Renderer extends BoundedComponent {
 					RenderUtils.render(temp.get(i).textureName, vertexBuffer, uvBuffer, visible.size()
 							* 6, indexBuffer, Camera.main.transform.position.x, Camera.main
 							.transform.position.y, Screen.scale);
-
-					drawCalls++;
 				}
 			}
 		}
-//		Log.i("", "Draw calls: " + drawCalls);
 	}
-
-	private static ArrayList<Renderer> visible = new ArrayList<>();
-
-	private static float[] vertices = new float[0];
-	private static short[] indices = new short[0];
-	private static float[] uvs = new float[0];
-	private static FloatBuffer vertexBuffer;
-	private static ShortBuffer indexBuffer;
-	private static FloatBuffer uvBuffer;
 
 	private static void setupRenderData(ArrayList<Renderer> renderers) {
 		int i = 0;
