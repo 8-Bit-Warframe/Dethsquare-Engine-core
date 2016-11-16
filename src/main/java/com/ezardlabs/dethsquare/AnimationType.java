@@ -19,11 +19,11 @@ public abstract class AnimationType implements Cloneable {
 
 		@Override
 		public int update(int currentFrame, int numFrames) {
-			currentFrame += direction;
-			if (currentFrame == 0 || currentFrame == numFrames - 1) {
+			int frame = currentFrame + direction;
+			if (frame == 0 || frame == numFrames - 1) {
 				direction *= -1;
 			}
-			return currentFrame;
+			return frame;
 		}
 	};
 	/**
