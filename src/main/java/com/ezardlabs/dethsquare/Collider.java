@@ -1,13 +1,29 @@
 package com.ezardlabs.dethsquare;
 
+import com.ezardlabs.dethsquare.util.GameListeners;
+import com.ezardlabs.dethsquare.util.GameListeners.UpdateListener;
+
 import java.util.ArrayList;
 
 public final class Collider extends BoundedComponent {
+	static {
+		GameListeners.addUpdateListener(new UpdateListener() {
+			@Override
+			public void onUpdate() {
+				if (rebuildQuadTree) {
+					qt.init(staticColliders.toArray(new Collider[staticColliders.size()]));
+					rebuildQuadTree = false;
+				}
+			}
+		});
+	}
+
 	public static final ArrayList<Collider> normalColliders = new ArrayList<>();
 	public static final ArrayList<Collider> staticColliders = new ArrayList<>();
 	public static final ArrayList<Collider> triggerColliders = new ArrayList<>();
 	public static QuadTree<Collider> qt = new QuadTree<>(20);
 	private static boolean inited = false;
+	private static boolean rebuildQuadTree = false;
 	public final RectF lastBounds = new RectF();
 	private final float height;
 	private final float width;
@@ -86,7 +102,7 @@ public final class Collider extends BoundedComponent {
 		if (gameObject.isStatic) {
 			staticColliders.add(this);
 			if (inited) {
-				qt.init(staticColliders.toArray(new Collider[staticColliders.size()]));
+				rebuildQuadTree = true;
 			}
 		}
 		if (isTrigger) addTrigger();
