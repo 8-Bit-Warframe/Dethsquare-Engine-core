@@ -5,6 +5,9 @@ package com.ezardlabs.dethsquare;
  */
 public class Script extends Component {
 
+	/**
+	 * Called every frame
+	 */
 	public void update() {
 	}
 }
