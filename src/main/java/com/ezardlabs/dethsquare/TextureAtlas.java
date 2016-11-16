@@ -1,7 +1,7 @@
 package com.ezardlabs.dethsquare;
 
+import com.ezardlabs.dethsquare.util.IOUtils;
 import com.ezardlabs.dethsquare.util.RenderUtils;
-import com.ezardlabs.dethsquare.util.Utils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -34,7 +34,7 @@ public final class TextureAtlas {
 		if(mapPath != null) {
 			try {
 				String temp;
-				BufferedReader reader = Utils.getReader(mapPath);
+				BufferedReader reader = IOUtils.getReader(mapPath);
 				while ((temp = reader.readLine()) != null) {
 					String[] split = temp.split(" = ");
 					String[] split2 = split[1].split(" ");
