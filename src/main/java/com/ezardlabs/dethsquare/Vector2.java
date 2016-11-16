@@ -6,6 +6,7 @@ package com.ezardlabs.dethsquare;
 public final class Vector2 {
 	public float x;
 	public float y;
+	private Vector2ChangeListener listener;
 
 	/**
 	 * Shorthand for writing Vector2(0, 0)
@@ -70,8 +71,6 @@ public final class Vector2 {
 	public boolean equals(Object o) {
 		return o instanceof Vector2 && ((Vector2) o).x == x && ((Vector2) o).y == y;
 	}
-
-	private Vector2ChangeListener listener;
 
 	void setVector2ChangeListener(Vector2ChangeListener listener) {
 		this.listener = listener;
