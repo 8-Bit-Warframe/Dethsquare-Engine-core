@@ -21,12 +21,14 @@ public class Component {
      * Called when this {@link Component} is first created
      */
 	public void start() {
+		// Only used in subclasses
 	}
 
     /**
      * Called when this {@link Component} is destroyed
      */
     protected void destroy() {
+		// Only used in subclasses
     }
 
 	/**
@@ -35,6 +37,7 @@ public class Component {
 	 * @param other The other {@link Collider} involved in the collision
 	 */
 	public void onTriggerEnter(Collider other) {
+		// Only used in subclasses
 	}
 
 	/**
@@ -42,5 +45,6 @@ public class Component {
 	 * @param collision the {@link Collision} data associated with this collision
 	 */
 	public void onCollision(Collision collision) {
+		// Only used in subclasses
 	}
 }
