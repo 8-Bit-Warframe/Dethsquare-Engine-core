@@ -43,6 +43,8 @@ public final class Input {
 					case 3:
 						setKeyUp(KeyCode.MOUSE_RIGHT);
 						break;
+					default:
+						break;
 				}
 			}
 		});
@@ -186,6 +188,8 @@ public final class Input {
 						}
 					}
 					break;
+				default:
+					break;
 			}
 		}
 
@@ -198,6 +202,8 @@ public final class Input {
 					break;
 				case 2:
 					keys.remove(keyCode);
+					break;
+				default:
 					break;
 			}
 		}
