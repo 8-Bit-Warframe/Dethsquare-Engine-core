@@ -28,6 +28,8 @@ public final class Input {
 					case 3:
 						setKeyDown(KeyCode.MOUSE_RIGHT);
 						break;
+					default:
+						break;
 				}
 			}
 
