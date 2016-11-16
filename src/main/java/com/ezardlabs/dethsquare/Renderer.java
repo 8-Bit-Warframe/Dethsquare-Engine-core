@@ -221,31 +221,12 @@ public class Renderer extends BoundedComponent {
 		Renderer r;
 		for (int j = 0; j < renderers.size(); j++) {
 			r = renderers.get(j);
-//			vertices[(i * 12)] = r.transform.position.x * Screen.scale;
-//			vertices[(i * 12) + 1] = r.transform.position.y * Screen.scale + (r.height * Screen.scale);
-//			vertices[(i * 12) + 2] = 0;
-//			vertices[(i * 12) + 3] = r.transform.position.x * Screen.scale;
-//			vertices[(i * 12) + 4] = r.transform.position.y * Screen.scale;
-//			vertices[(i * 12) + 5] = 0;
-//			vertices[(i * 12) + 6] = r.transform.position.x * Screen.scale + (r.width * Screen.scale);
-//			vertices[(i * 12) + 7] = r.transform.position.y * Screen.scale;
-//			vertices[(i * 12) + 8] = 0;
-//			vertices[(i * 12) + 9] = r.transform.position.x * Screen.scale + (r.width * Screen.scale);
-//			vertices[(i * 12) + 10] = r.transform.position.y * Screen.scale + (r.height * Screen.scale);
-//			vertices[(i * 12) + 11] = 0;
 
 			vertices[(i * 12)] = vertices[(i * 12) + 3] = r.getXPos() * Screen.scale;
 			vertices[(i * 12) + 1] = vertices[(i * 12) + 10] = r.getYPos() * Screen.scale + (r.height * Screen.scale);
 			vertices[(i * 12) + 2] = vertices[(i * 12) + 5] = vertices[(i * 12) + 8] = vertices[(i * 12) + 11] = 0;
 			vertices[(i * 12) + 4] = vertices[(i * 12) + 7] = r.getYPos() * Screen.scale;
 			vertices[(i * 12) + 6] = vertices[(i * 12) + 9] = r.getXPos() * Screen.scale + (r.width * Screen.scale);
-
-//			indices[(i * 6)] = (short) (last);
-//			indices[(i * 6) + 1] = (short) (last + 1);
-//			indices[(i * 6) + 2] = (short) (last + 2);
-//			indices[(i * 6) + 3] = (short) (last);
-//			indices[(i * 6) + 4] = (short) (last + 2);
-//			indices[(i * 6) + 5] = (short) (last + 3);
 
 			indices[(i * 6)] = indices[(i * 6) + 3] = (short) (last);
 			indices[(i * 6) + 1] = (short) (last + 1);
