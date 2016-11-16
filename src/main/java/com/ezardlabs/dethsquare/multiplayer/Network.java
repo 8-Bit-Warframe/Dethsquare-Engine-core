@@ -61,6 +61,9 @@ public class Network {
 	//TODO change back to -1 then make it work in singleplayer
 	private static int networkIdCounter = 0;
 
+	private static final String INSTANTIATE = "instantiate";
+	private static final String DESTROY = "destroy";
+
 	public static int getPlayerId() {
 		return playerId;
 	}
@@ -315,12 +318,16 @@ public class Network {
 				while (socket.isConnected()) {
 					String command = in.readLine();
 					if (command != null) {
-						if (command.equals("instantiate")) {
-							processInstantiation(in);
-						} else if (command.equals("destroy")) {
-							processDestruction(in);
-						} else {
-							System.out.println("Unknown command:" + command);
+						switch (command) {
+							case INSTANTIATE:
+								processInstantiation(in);
+								break;
+							case DESTROY:
+								processDestruction(in);
+								break;
+							default:
+								System.out.println("Unknown command:" + command);
+								break;
 						}
 					}
 				}
@@ -377,7 +384,7 @@ public class Network {
 				networkIds.put(nb.getClass().getCanonicalName(), nb.getNetworkId());
 			}
 			StringBuilder sb = new StringBuilder();
-			sb.append("instantiate").append(System.lineSeparator());
+			sb.append(INSTANTIATE).append(System.lineSeparator());
 			if (PrefabManager.prefabExists(prefabName + "_other")) {
 				sb.append(prefabName).append("_other").append(System.lineSeparator());
 			} else {
@@ -450,7 +457,7 @@ public class Network {
 		GameObject.destroy(gameObject);
 		if (tcpOut != null) {
 			StringBuilder sb = new StringBuilder();
-			sb.append("destroy").append(System.lineSeparator());
+			sb.append(DESTROY).append(System.lineSeparator());
 			sb.append(gameObject.networkId).append(System.lineSeparator());
 			String message = sb.toString();
 			for (TCPWriter writer : tcpOut) {
