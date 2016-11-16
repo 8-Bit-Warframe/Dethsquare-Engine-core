@@ -16,7 +16,6 @@ public abstract class NetworkBehaviour extends Component {
 	public NetworkBehaviour() {
 		networkId = Network.getNewNetworkId();
 		playerId = Network.getPlayerId();
-		if (playerId == -1) throw new Error("Player ID has not been set yet");
 	}
 
 	@Override

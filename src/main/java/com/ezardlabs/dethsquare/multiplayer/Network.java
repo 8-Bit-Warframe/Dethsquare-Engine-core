@@ -48,11 +48,9 @@ public class Network {
 
 	private static int myPort = 2828;
 
-	// TODO change back to -1 then make it work in singleplayer
 	private static int playerId = 0;
 	private static boolean host = true;
 
-	//TODO change back to -1 then make it work in singleplayer
 	private static int networkIdCounter = 0;
 
 	private static final String INSTANTIATE = "instantiate";
@@ -63,7 +61,6 @@ public class Network {
 	}
 
 	static int getNewNetworkId() {
-		if (networkIdCounter == -1) throw new Error("Network ID counter has not been setup yet");
 		return networkIdCounter++;
 	}
 
