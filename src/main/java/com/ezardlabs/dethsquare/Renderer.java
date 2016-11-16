@@ -273,6 +273,7 @@ public class Renderer extends BoundedComponent {
 				case NONE:
 				default:
 					u = v = w = h = 0;
+					break;
 			}
 			if (r.hFlipped && r.vFlipped) {
 				uvs[(i * 8) + 6] = u;
