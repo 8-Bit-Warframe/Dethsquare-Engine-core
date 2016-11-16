@@ -213,77 +213,12 @@ public class Renderer extends BoundedComponent {
 		for (int j = 0; j < renderers.size(); j++) {
 			r = renderers.get(j);
 
-			vertices[(i * 12)] = vertices[(i * 12) + 3] = r.getXPos() * Screen.scale;
-			vertices[(i * 12) + 1] = vertices[(i * 12) + 10] = r.getYPos() * Screen.scale + (r.height * Screen.scale);
-			vertices[(i * 12) + 2] = vertices[(i * 12) + 5] = vertices[(i * 12) + 8] = vertices[(i * 12) + 11] = 0;
-			vertices[(i * 12) + 4] = vertices[(i * 12) + 7] = r.getYPos() * Screen.scale;
-			vertices[(i * 12) + 6] = vertices[(i * 12) + 9] = r.getXPos() * Screen.scale + (r.width * Screen.scale);
+			setupVertices(r, i);
 
-			indices[(i * 6)] = indices[(i * 6) + 3] = (short) (last);
-			indices[(i * 6) + 1] = (short) (last + 1);
-			indices[(i * 6) + 2] = indices[(i * 6) + 4] = (short) (last + 2);
-			indices[(i * 6) + 5] = (short) (last + 3);
+			setupIndices(i, last);
 			last = last + 4;
 
-			float u;
-			float v;
-			float w;
-			float h;
-			switch (r.mode) {
-				case IMAGE:
-					u = 0;
-					v = 0;
-					w = 1;
-					h = 1;
-					break;
-				case SPRITE:
-					u = r.sprite.u;
-					v = r.sprite.v;
-					w = r.sprite.w;
-					h = r.sprite.h;
-					break;
-				case NONE:
-				default:
-					u = v = w = h = 0;
-					break;
-			}
-			if (r.hFlipped && r.vFlipped) {
-				uvs[(i * 8) + 6] = u;
-				uvs[(i * 8) + 7] = v;
-				uvs[(i * 8) + 4] = u;
-				uvs[(i * 8) + 5] = v + h;
-				uvs[(i * 8) + 2] = u + w;
-				uvs[(i * 8) + 3] = v + h;
-				uvs[(i * 8)] = u + w;
-				uvs[(i * 8) + 1] = v;
-			} else if (r.hFlipped) {
-				uvs[(i * 8) + 4] = u;
-				uvs[(i * 8) + 5] = v;
-				uvs[(i * 8) + 6] = u;
-				uvs[(i * 8) + 7] = v + h;
-				uvs[(i * 8)] = u + w;
-				uvs[(i * 8) + 1] = v + h;
-				uvs[(i * 8) + 2] = u + w;
-				uvs[(i * 8) + 3] = v;
-			} else if (r.vFlipped) {
-				uvs[(i * 8)] = u;
-				uvs[(i * 8) + 1] = v;
-				uvs[(i * 8) + 2] = u;
-				uvs[(i * 8) + 3] = v + h;
-				uvs[(i * 8) + 4] = u + w;
-				uvs[(i * 8) + 5] = v + h;
-				uvs[(i * 8) + 6] = u + w;
-				uvs[(i * 8) + 7] = v;
-			} else {
-				uvs[(i * 8) + 2] = u;
-				uvs[(i * 8) + 3] = v;
-				uvs[(i * 8)] = u;
-				uvs[(i * 8) + 1] = v + h;
-				uvs[(i * 8) + 6] = u + w;
-				uvs[(i * 8) + 7] = v + h;
-				uvs[(i * 8) + 4] = u + w;
-				uvs[(i * 8) + 5] = v;
-			}
+			setupUVs(r, i);
 
 			i++;
 		}
@@ -298,5 +233,82 @@ public class Renderer extends BoundedComponent {
 		uvBuffer.position(0);
 		uvBuffer.put(uvs);
 		uvBuffer.position(0);
+	}
+
+	private static void setupVertices(Renderer r, int i) {
+		vertices[(i * 12)] = vertices[(i * 12) + 3] = r.getXPos() * Screen.scale;
+		vertices[(i * 12) + 1] = vertices[(i * 12) + 10] = r.getYPos() * Screen.scale + (r.height * Screen.scale);
+		vertices[(i * 12) + 2] = vertices[(i * 12) + 5] = vertices[(i * 12) + 8] = vertices[(i * 12) + 11] = 0;
+		vertices[(i * 12) + 4] = vertices[(i * 12) + 7] = r.getYPos() * Screen.scale;
+		vertices[(i * 12) + 6] = vertices[(i * 12) + 9] = r.getXPos() * Screen.scale + (r.width * Screen.scale);
+	}
+
+	private static void setupIndices(int i, int last) {
+		indices[(i * 6)] = indices[(i * 6) + 3] = (short) (last);
+		indices[(i * 6) + 1] = (short) (last + 1);
+		indices[(i * 6) + 2] = indices[(i * 6) + 4] = (short) (last + 2);
+		indices[(i * 6) + 5] = (short) (last + 3);
+	}
+
+	private static void setupUVs(Renderer r, int i) {
+		float u;
+		float v;
+		float w;
+		float h;
+		switch (r.mode) {
+			case IMAGE:
+				u = 0;
+				v = 0;
+				w = 1;
+				h = 1;
+				break;
+			case SPRITE:
+				u = r.sprite.u;
+				v = r.sprite.v;
+				w = r.sprite.w;
+				h = r.sprite.h;
+				break;
+			case NONE:
+			default:
+				u = v = w = h = 0;
+				break;
+		}
+		if (r.hFlipped && r.vFlipped) {
+			uvs[(i * 8) + 6] = u;
+			uvs[(i * 8) + 7] = v;
+			uvs[(i * 8) + 4] = u;
+			uvs[(i * 8) + 5] = v + h;
+			uvs[(i * 8) + 2] = u + w;
+			uvs[(i * 8) + 3] = v + h;
+			uvs[(i * 8)] = u + w;
+			uvs[(i * 8) + 1] = v;
+		} else if (r.hFlipped) {
+			uvs[(i * 8) + 4] = u;
+			uvs[(i * 8) + 5] = v;
+			uvs[(i * 8) + 6] = u;
+			uvs[(i * 8) + 7] = v + h;
+			uvs[(i * 8)] = u + w;
+			uvs[(i * 8) + 1] = v + h;
+			uvs[(i * 8) + 2] = u + w;
+			uvs[(i * 8) + 3] = v;
+		} else if (r.vFlipped) {
+			uvs[(i * 8)] = u;
+			uvs[(i * 8) + 1] = v;
+			uvs[(i * 8) + 2] = u;
+			uvs[(i * 8) + 3] = v + h;
+			uvs[(i * 8) + 4] = u + w;
+			uvs[(i * 8) + 5] = v + h;
+			uvs[(i * 8) + 6] = u + w;
+			uvs[(i * 8) + 7] = v;
+		} else {
+			uvs[(i * 8) + 2] = u;
+			uvs[(i * 8) + 3] = v;
+			uvs[(i * 8)] = u;
+			uvs[(i * 8) + 1] = v + h;
+			uvs[(i * 8) + 6] = u + w;
+			uvs[(i * 8) + 7] = v + h;
+			uvs[(i * 8) + 4] = u + w;
+			uvs[(i * 8) + 5] = v;
+		}
 	}
 }
