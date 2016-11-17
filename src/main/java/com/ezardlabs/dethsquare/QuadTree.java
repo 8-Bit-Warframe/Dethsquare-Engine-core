@@ -121,7 +121,7 @@ final class QuadTree<T extends BoundedComponent> {
 			if (objects.size() > maxObjects) {
 				if (isLeaf()) split();
 				outer:
-				while (objects.size() > 0) {
+				while (!objects.isEmpty()) {
 					for (int j = 0; j < 4; j++) {
 						if (nodes[j].bounds.contains(bc.bounds)) {
 							nodes[j].insert(objects.remove(0));
