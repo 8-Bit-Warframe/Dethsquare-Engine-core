@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -53,6 +54,8 @@ public class Network {
 
 	private static int networkIdCounter = 0;
 
+	private static final String DIVIDER = "|";
+	private static final String SPLIT_DIVIDER = Pattern.quote(DIVIDER);
 	private static final String INSTANTIATE = "instantiate";
 	private static final String DESTROY = "destroy";
 
@@ -311,10 +314,10 @@ public class Network {
 					if (command != null) {
 						switch (command) {
 							case INSTANTIATE:
-								processInstantiation(in);
+								processInstantiation(in.readLine());
 								break;
 							case DESTROY:
-								processDestruction(in);
+								processDestruction(in.readLine());
 								break;
 							default:
 								System.out.println("Unknown command:" + command);
@@ -331,7 +334,7 @@ public class Network {
 
 	private static class TCPWriter extends Thread {
 		private final Socket socket;
-		private final ArrayList<String> messages = new ArrayList<>();
+		private final ArrayList<String[]> messages = new ArrayList<>();
 
 		TCPWriter(Socket socket) {
 			super("TCPWriter");
@@ -346,8 +349,11 @@ public class Network {
 					synchronized (messages) {
 						messages.wait();
 						while (!messages.isEmpty()) {
-							String s = messages.remove(0);
-							out.write(s);
+							String[] s = messages.remove(0);
+							out.write(s[0]);
+							out.newLine();
+							out.write(s[1]);
+							out.newLine();
 							out.flush();
 						}
 					}
@@ -357,9 +363,13 @@ public class Network {
 			}
 		}
 
-		void sendMessage(String message) {
+		void sendMessage(String command, String message) {
+			if (message.contains("\n") || message.contains("\r")) {
+				throw new IllegalArgumentException("Message cannot contain newline characters");
+			}
 			synchronized (messages) {
-				messages.add(message);
+				messages.add(new String[]{command,
+						message});
 				messages.notify();
 			}
 		}
@@ -375,22 +385,22 @@ public class Network {
 				networkIds.put(nb.getClass().getCanonicalName(), nb.getNetworkId());
 			}
 			StringBuilder sb = new StringBuilder();
-			sb.append(INSTANTIATE).append(System.lineSeparator());
 			if (PrefabManager.prefabExists(prefabName + "_other")) {
-				sb.append(prefabName).append("_other").append(System.lineSeparator());
+				sb.append(prefabName).append("_other").append(DIVIDER);
 			} else {
-				sb.append(prefabName).append(System.lineSeparator());
+				sb.append(prefabName).append(DIVIDER);
 			}
-			sb.append(gameObject.networkId).append(System.lineSeparator());
-			sb.append(position.x).append(System.lineSeparator());
-			sb.append(position.y).append(System.lineSeparator());
-			sb.append(playerId).append(System.lineSeparator());
+			sb.append(gameObject.networkId).append(DIVIDER);
+			sb.append(position.x).append(DIVIDER);
+			sb.append(position.y).append(DIVIDER);
+			sb.append(playerId).append(DIVIDER);
 			for (String key : networkIds.keySet()) {
-				sb.append(key).append(System.lineSeparator()).append(networkIds.get(key)).append(System.lineSeparator());
+				sb.append(key).append(DIVIDER).append(networkIds.get(key)).append(DIVIDER);
 			}
 			String message = sb.toString();
+			message = message.substring(0, message.length() - 1);
 			for (TCPWriter writer : tcpOut) {
-				writer.sendMessage(message);
+				writer.sendMessage(INSTANTIATE, message);
 			}
 		}
 
@@ -424,18 +434,18 @@ public class Network {
 		return GameObject.instantiate(gameObject, position);
 	}
 
-	private static void processInstantiation(BufferedReader in) throws IOException {
-		String name = in.readLine();
-		GameObject gameObject = PrefabManager.loadPrefab(name);
-		gameObject.networkId = Integer.parseInt(in.readLine());
-		Vector2 position = new Vector2(Float.parseFloat(in.readLine()),
-				Float.parseFloat(in.readLine()));
-		int playerId = Integer.parseInt(in.readLine());
+	private static void processInstantiation(String message) throws IOException {
+		String[] split = message.split(SPLIT_DIVIDER);
+		GameObject gameObject = PrefabManager.loadPrefab(split[0]);
+		gameObject.networkId = Integer.parseInt(split[1]);
+		Vector2 position = new Vector2(Float.parseFloat(split[2]),
+				Float.parseFloat(split[3]));
+		int playerId = Integer.parseInt(split[4]);
 		List<NetworkBehaviour> networkBehaviours = gameObject
 				.getComponentsOfType(NetworkBehaviour.class);
 		HashMap<String, Integer> networkIds = new HashMap<>();
 		for (int i = 0; i < networkBehaviours.size(); i++) {
-			networkIds.put(in.readLine(), Integer.parseInt(in.readLine()));
+			networkIds.put(split[5 + (i * 2)], Integer.parseInt(split[6 + (i * 2)]));
 		}
 		for (NetworkBehaviour nb : networkBehaviours) {
 			nb.setPlayerId(playerId);
@@ -447,12 +457,8 @@ public class Network {
 	public static void destroy(GameObject gameObject) {
 		GameObject.destroy(gameObject);
 		if (tcpOut != null) {
-			StringBuilder sb = new StringBuilder();
-			sb.append(DESTROY).append(System.lineSeparator());
-			sb.append(gameObject.networkId).append(System.lineSeparator());
-			String message = sb.toString();
 			for (TCPWriter writer : tcpOut) {
-				writer.sendMessage(message);
+				writer.sendMessage(DESTROY, String.valueOf(gameObject.networkId));
 			}
 		}
 	}
@@ -466,8 +472,8 @@ public class Network {
 		}, delay);
 	}
 
-	private static void processDestruction(BufferedReader in) throws IOException {
-		GameObject.destroy(Integer.parseInt(in.readLine()));
+	private static void processDestruction(String message) throws IOException {
+		GameObject.destroy(Integer.parseInt(message));
 	}
 
 	public interface NetworkStateChangeListener {
