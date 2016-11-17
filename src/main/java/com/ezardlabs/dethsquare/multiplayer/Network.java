@@ -168,7 +168,7 @@ public class Network {
 			udpOut.sendMessage(data.array());
 		}
 		synchronized (udpIn.udpMessages) {
-			while (udpIn.udpMessages.size() > 0) {
+			while (!udpIn.udpMessages.isEmpty()) {
 				int count = 0;
 				ByteBuffer data = ByteBuffer.wrap(udpIn.udpMessages.remove(0));
 				NetworkBehaviour nb;
@@ -345,7 +345,7 @@ public class Network {
 				while (true) {
 					synchronized (messages) {
 						messages.wait();
-						while (messages.size() > 0) {
+						while (!messages.isEmpty()) {
 							String s = messages.remove(0);
 							out.write(s);
 							out.flush();
