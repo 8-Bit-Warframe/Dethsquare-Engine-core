@@ -116,17 +116,7 @@ final class QuadTree<T extends BoundedComponent> {
 
 	private void insert(BoundedComponent bc) {
 		insertCount++;
-		if (!isLeaf()) {
-			for (int i = 0; i < 4; i++) {
-				if (nodes[i].bounds.contains(bc.bounds)) {
-					nodes[i].insert(bc);
-					return;
-				}
-			}
-			for (int i = 0; i < 4; i++) {
-				if (RectF.intersects(nodes[i].bounds, bc.bounds)) nodes[i].insert(bc);
-			}
-		} else {
+		if (isLeaf()) {
 			objects.add((T) bc);
 			if (objects.size() > maxObjects) {
 				if (isLeaf()) split();
@@ -143,6 +133,16 @@ final class QuadTree<T extends BoundedComponent> {
 						if (RectF.intersects(nodes[j].bounds, bc2.bounds)) nodes[j].insert(bc2);
 					}
 				}
+			}
+		} else {
+			for (int i = 0; i < 4; i++) {
+				if (nodes[i].bounds.contains(bc.bounds)) {
+					nodes[i].insert(bc);
+					return;
+				}
+			}
+			for (int i = 0; i < 4; i++) {
+				if (RectF.intersects(nodes[i].bounds, bc.bounds)) nodes[i].insert(bc);
 			}
 		}
 	}
