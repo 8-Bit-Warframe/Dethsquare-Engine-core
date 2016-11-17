@@ -235,7 +235,7 @@ public final class GameObject implements Serializable {
 	 */
 	public <T extends Component> T removeComponent(Class<T> type) {
 		if (type.equals(Transform.class)) {
-			throw new Error("Cannot remove the Transform type of a GameObject");
+			throw new IllegalArgumentException("Cannot remove the Transform type of a GameObject");
 		}
 		removedComponents.add(type);
 		objectsWithChangedComponents.add(this);
