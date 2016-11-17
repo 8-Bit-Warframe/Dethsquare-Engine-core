@@ -160,8 +160,7 @@ public final class GameObject implements Serializable {
 	 */
 	private <T extends Component> T addComponent(T component, boolean callStart) {
 		if (getComponent(component.getClass()) != null) {
-			throw new Error("Component of type " + component.getClass() + " already exists on " +
-					"this GameObject");
+			throw new ComponentAlreadyExistsError(component);
 		}
 		newComponents.add(component);
 		if (callStart) {
@@ -473,5 +472,13 @@ public final class GameObject implements Serializable {
 		gameObject.setTag(tag);
 		gameObject.networkId = networkId;
 		return gameObject;
+	}
+
+	private static class ComponentAlreadyExistsError extends Error {
+
+		private ComponentAlreadyExistsError(Component component) {
+			super("Component of type " + component.getClass() +
+					" already exists on this GameObject");
+		}
 	}
 }
