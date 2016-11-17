@@ -64,7 +64,7 @@ final class QuadTree<T extends BoundedComponent> {
 					retrieve(returnObjects, qt2, bc);
 				}
 			}
-			if (returnObjects.size() > 0) return returnObjects;
+			if (!returnObjects.isEmpty()) return returnObjects;
 		}
 		returnObjects.addAll(qt.objects);
 		return returnObjects;
