@@ -27,6 +27,6 @@ public class NetworkAnimator extends NetworkBehaviour {
 
 	@Override
 	public int getSize() {
-		return 32;
+		return 8;
 	}
 }
