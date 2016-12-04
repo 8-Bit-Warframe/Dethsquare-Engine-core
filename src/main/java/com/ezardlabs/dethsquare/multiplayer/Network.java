@@ -54,6 +54,9 @@ public class Network {
 
 	private static int networkIdCounter = 0;
 
+	private static final long UPDATES_PER_SECOND = 30;
+	private static long lastUpdate = 0;
+
 	private static final String DIVIDER = "|";
 	private static final String SPLIT_DIVIDER = Pattern.quote(DIVIDER);
 	private static final String INSTANTIATE = "instantiate";
@@ -160,7 +163,8 @@ public class Network {
 	}
 
 	private static void update() {
-		if (Time.frameCount % 2 == 0) {
+		if (System.currentTimeMillis() >= lastUpdate + 1000 / UPDATES_PER_SECOND) {
+			lastUpdate = System.currentTimeMillis();
 			ByteBuffer data = ByteBuffer.allocate(NetworkBehaviour.totalSize + (NetworkBehaviour
 					.myNetworkBehaviours.size() * 8));
 			for (NetworkBehaviour nb : NetworkBehaviour.myNetworkBehaviours.values()) {
