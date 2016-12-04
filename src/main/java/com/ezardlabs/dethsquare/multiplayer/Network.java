@@ -48,7 +48,7 @@ public class Network {
 
 	private static int networkIdCounter = 0;
 
-	private static final long UPDATES_PER_SECOND = 30;
+	private static final long UPDATES_PER_SECOND = 60;
 	private static long lastUpdate = 0;
 
 	private static final String DIVIDER = "|";
