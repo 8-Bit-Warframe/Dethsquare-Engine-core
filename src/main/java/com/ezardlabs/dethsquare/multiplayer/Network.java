@@ -3,6 +3,7 @@ package com.ezardlabs.dethsquare.multiplayer;
 import com.ezardlabs.dethsquare.GameObject;
 import com.ezardlabs.dethsquare.Vector2;
 import com.ezardlabs.dethsquare.multiplayer.Network.NetworkStateChangeListener.State;
+import com.ezardlabs.dethsquare.multiplayer.UPnPManager.Protocol;
 import com.ezardlabs.dethsquare.prefabs.PrefabManager;
 import com.ezardlabs.dethsquare.util.GameListeners;
 import com.ezardlabs.dethsquare.util.GameListeners.UpdateListener;
@@ -68,6 +69,14 @@ public class Network {
 	}
 
 	public static void findGame(NetworkStateChangeListener listener) {
+		System.out.println("Doing UPnP discovery stuff");
+		UPnPManager.discover();
+		System.out.println("Discovery stuff done");
+		System.out.println("Adding UDP port mapping");
+		UPnPManager.addPortMapping(myPort, Protocol.UDP, "Lost Sector UDP " + myPort);
+		System.out.println("Adding TCP port mapping");
+		UPnPManager.addPortMapping(myPort + 1, Protocol.TCP, "Lost Sector TCP " + (myPort + 1));
+		System.out.println("Port mappings done");
 		Network.listener = listener;
 		new TCPServer().start();
 		MatchmakingThread mt = new MatchmakingThread();
