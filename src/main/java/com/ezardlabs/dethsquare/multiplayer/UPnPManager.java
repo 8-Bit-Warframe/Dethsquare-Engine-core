@@ -34,7 +34,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-public class UPnPManager {
+class UPnPManager {
 	private static final String IP = "239.255.255.250";
 	private static final int PORT = 1900;
 	private static final String[] SEARCH_TYPES = {"urn:schemas-upnp-org:device:InternetGatewayDevice:1",
@@ -187,7 +187,7 @@ public class UPnPManager {
 		}
 	}
 
-	public static void discover() {
+	static void discover() {
 		localAddresses = getLocalInetAddresses();
 		ArrayList<DiscoveryThread> discoveryThreads = new ArrayList<>(localAddresses.size());
 		for (InetAddress address : localAddresses) {
@@ -327,7 +327,7 @@ public class UPnPManager {
 		}
 	}
 
-	public static void addPortMapping(int port, Protocol protocol, String description) {
+	static void addPortMapping(int port, Protocol protocol, String description) {
 		System.out.println("Services: " + services);
 		HashMap<String, String> args = new HashMap<>();
 		args.put("NewRemoteHost", "");
