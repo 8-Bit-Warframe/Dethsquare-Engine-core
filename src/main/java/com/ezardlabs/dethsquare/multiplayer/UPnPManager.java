@@ -90,7 +90,7 @@ public class UPnPManager {
 		return arrayIPAddress;
 	}
 
-	private class DiscoveryThread extends Thread {
+	private static class DiscoveryThread extends Thread {
 		private final InetAddress address;
 
 		private DiscoveryThread(InetAddress address) {
@@ -99,13 +99,6 @@ public class UPnPManager {
 
 		@Override
 		public void run() {
-			super.run();
-		}
-	}
-
-	public static void discover() {
-		localAddresses = getLocalInetAddresses();
-		for (InetAddress address : localAddresses) {
 			System.out.println("Searching for UPnP devices from " + address);
 			try {
 				DatagramSocket socket = new DatagramSocket(0, address);
@@ -190,6 +183,22 @@ public class UPnPManager {
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
+			}
+		}
+	}
+
+	public static void discover() {
+		localAddresses = getLocalInetAddresses();
+		ArrayList<DiscoveryThread> discoveryThreads = new ArrayList<>(localAddresses.size());
+		for (InetAddress address : localAddresses) {
+			DiscoveryThread discoveryThread = new DiscoveryThread(address);
+			discoveryThreads.add(discoveryThread);
+			discoveryThread.start();
+		}
+		for (DiscoveryThread discoveryThread : discoveryThreads) {
+			try {
+				discoveryThread.join();
+			} catch (InterruptedException ignored) {
 			}
 		}
 	}
