@@ -22,7 +22,7 @@ public class NetworkTransform extends NetworkBehaviour {
 	}
 
 	@Override
-	public int getSize() {
+	public short getSize() {
 		return 8;
 	}
 }

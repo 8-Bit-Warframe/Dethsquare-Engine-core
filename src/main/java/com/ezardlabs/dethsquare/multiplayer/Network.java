@@ -144,7 +144,7 @@ public class Network {
 					.myNetworkBehaviours.size() * 8));
 			for (NetworkBehaviour nb : NetworkBehaviour.myNetworkBehaviours.values()) {
 				data.putInt(nb.getNetworkId());
-				data.putInt(nb.getSize());
+				data.putShort(nb.getSize());
 				data.put(nb.onSend());
 			}
 			udpOut.sendMessage(data.array());
@@ -158,12 +158,12 @@ public class Network {
 					data.position(count);
 					int networkId = data.getInt(count);
 					if (networkId == 0) break;
-					int size = data.getInt(count + 4);
+					int size = data.getShort(count + 4);
 					nb = NetworkBehaviour.otherNetworkBehaviours.get(networkId);
 					if (nb != null) {
-						nb.onReceive(data, count + 8);
+						nb.onReceive(data, count + 6);
 					}
-					count += size + 8;
+					count += size + 6;
 				}
 			}
 		}

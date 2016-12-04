@@ -24,7 +24,7 @@ public class NetworkRenderer extends NetworkBehaviour {
 	}
 
 	@Override
-	public int getSize() {
+	public short getSize() {
 		return 24;
 	}
 }

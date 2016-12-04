@@ -58,5 +58,5 @@ public abstract class NetworkBehaviour extends Component {
 
 	protected abstract void onReceive(ByteBuffer data, int index);
 
-	public abstract int getSize();
+	public abstract short getSize();
 }
