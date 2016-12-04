@@ -51,7 +51,7 @@ public class UPnPManager {
 	}
 
 	private static List<InetAddress> getLocalInetAddresses() {
-		List<InetAddress> arrayIPAddress = new ArrayList<InetAddress>();
+		List<InetAddress> arrayIPAddress = new ArrayList<>();
 
 		// Get all network interfaces
 		Enumeration<NetworkInterface> networkInterfaces;
@@ -292,7 +292,7 @@ public class UPnPManager {
 
 			conn.getOutputStream().write(messageBytes);
 
-			Map<String, String> nameValue = new HashMap<String, String>();
+			Map<String, String> nameValue = new HashMap<>();
 			XMLReader parser = XMLReaderFactory.createXMLReader();
 			parser.setContentHandler(new NameValueHandler(nameValue));
 			if (conn.getResponseCode() == HttpURLConnection.HTTP_INTERNAL_ERROR) {
