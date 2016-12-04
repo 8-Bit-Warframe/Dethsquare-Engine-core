@@ -403,6 +403,8 @@ public final class GameObject implements Serializable {
 			}
 		}
 		objects.removeAll(destroyedObjects);
+		newObjects.removeAll(destroyedObjects);
+		objectsWithChangedComponents.removeAll(destroyedObjects);
 		destroyedObjects.clear();
 		objects.addAll(newObjects);
 
