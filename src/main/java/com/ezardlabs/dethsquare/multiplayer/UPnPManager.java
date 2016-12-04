@@ -52,7 +52,6 @@ public class UPnPManager {
 
 	private static List<InetAddress> getLocalInetAddresses() {
 		List<InetAddress> arrayIPAddress = new ArrayList<InetAddress>();
-		int lastIPv4Index = 0;
 
 		// Get all network interfaces
 		Enumeration<NetworkInterface> networkInterfaces;
