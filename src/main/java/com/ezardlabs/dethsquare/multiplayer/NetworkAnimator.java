@@ -14,19 +14,19 @@ public class NetworkAnimator extends NetworkBehaviour {
 	@Override
 	protected ByteBuffer onSend() {
 		data.position(0);
-		data.putInt(0, gameObject.animator.getCurrentAnimationId()); // 0 - 3
-		data.putInt(4, gameObject.animator.getCurrentAnimationFrame()); // 4 - 7
+		data.putShort(0, (short) gameObject.animator.getCurrentAnimationId()); // 0 - 1
+		data.putShort(2, (short) gameObject.animator.getCurrentAnimationFrame()); // 2 - 3
 		return data;
 	}
 
 	@Override
 	protected void onReceive(ByteBuffer data, int index) {
-		gameObject.animator.setCurrentAnimationId(data.getInt(index));
-		gameObject.animator.setCurrentAnimationFrame(data.getInt(index + 4));
+		gameObject.animator.setCurrentAnimationId(data.getShort(index));
+		gameObject.animator.setCurrentAnimationFrame(data.getShort(index + 2));
 	}
 
 	@Override
 	public short getSize() {
-		return 8;
+		return 4;
 	}
 }
