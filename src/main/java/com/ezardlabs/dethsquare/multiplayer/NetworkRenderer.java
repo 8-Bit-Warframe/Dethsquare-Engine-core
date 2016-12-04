@@ -7,12 +7,12 @@ public class NetworkRenderer extends NetworkBehaviour {
 	@Override
 	protected ByteBuffer onSend() {
 		data.position(0);
-		data.putFloat(0, gameObject.renderer.width); // 8 - 11
-		data.putFloat(4, gameObject.renderer.height); // 12 - 15
-		data.putFloat(8, gameObject.renderer.xOffset); // 16 - 19
-		data.putFloat(12, gameObject.renderer.yOffset); // 20 - 23
-		data.putInt(16, gameObject.renderer.hFlipped ? 1 : 0); // 24 - 27
-		data.putInt(20, gameObject.renderer.vFlipped ? 1 : 0); // 28 - 31
+		data.putFloat(0, gameObject.renderer.width); // 0 - 3
+		data.putFloat(4, gameObject.renderer.height); // 4 - 7
+		data.putFloat(8, gameObject.renderer.xOffset); // 8 - 11
+		data.putFloat(12, gameObject.renderer.yOffset); // 12 - 15
+		data.putInt(16, gameObject.renderer.hFlipped ? 1 : 0); // 16 - 19
+		data.putInt(20, gameObject.renderer.vFlipped ? 1 : 0); // 20 - 23
 		return data;
 	}
 
