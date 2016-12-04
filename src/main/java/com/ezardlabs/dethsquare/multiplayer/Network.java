@@ -8,12 +8,8 @@ import com.ezardlabs.dethsquare.prefabs.PrefabManager;
 import com.ezardlabs.dethsquare.util.GameListeners;
 import com.ezardlabs.dethsquare.util.GameListeners.UpdateListener;
 
-import org.bitlet.weupnp.GatewayDevice;
-import org.bitlet.weupnp.GatewayDiscover;
-import org.bitlet.weupnp.PortMappingEntry;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.xml.sax.SAXException;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -34,8 +30,6 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.regex.Pattern;
-
-import javax.xml.parsers.ParserConfigurationException;
 
 public class Network {
 	private static UpdateListener updateListener;
@@ -72,33 +66,6 @@ public class Network {
 
 	public static boolean isHost() {
 		return host;
-	}
-
-	private static void configureUPnP() throws ParserConfigurationException, SAXException, IOException {
-		GatewayDiscover discover = new GatewayDiscover();
-		System.out.println("Looking for Gateway Devices");
-		discover.discover();
-		GatewayDevice d = discover.getValidGateway();
-
-		PortMappingEntry pme = new PortMappingEntry();
-		if (!d.getSpecificPortMappingEntry(myPort, "UDP", pme)) {
-			System.out.println("UDP mapping does not already exist");
-			System.out.println("Adding UDP port mapping: " +
-					d.addPortMapping(myPort, myPort, d.getLocalAddress().getHostAddress(), "UDP",
-							"Lost Sector UDP"));
-		} else {
-			System.out.println("UDP mapping already exists");
-		}
-
-		pme = new PortMappingEntry();
-		if (!d.getSpecificPortMappingEntry(myPort + 1, "TCP", pme)) {
-			System.out.println("TCP mapping does not already exist");
-			System.out.println("Adding TCP port mapping: " +
-					d.addPortMapping(myPort + 1, myPort + 1, d.getLocalAddress().getHostAddress(),
-							"TCP", "Lost Sector TCP"));
-		} else {
-			System.out.println("TCP mapping already exists");
-		}
 	}
 
 	public static void findGame(NetworkStateChangeListener listener) {
