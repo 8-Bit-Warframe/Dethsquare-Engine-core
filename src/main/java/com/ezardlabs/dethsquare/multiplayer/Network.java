@@ -1,7 +1,6 @@
 package com.ezardlabs.dethsquare.multiplayer;
 
 import com.ezardlabs.dethsquare.GameObject;
-import com.ezardlabs.dethsquare.Time;
 import com.ezardlabs.dethsquare.Vector2;
 import com.ezardlabs.dethsquare.multiplayer.Network.NetworkStateChangeListener.State;
 import com.ezardlabs.dethsquare.prefabs.PrefabManager;
