@@ -1,14 +1,10 @@
 package com.ezardlabs.dethsquare.multiplayer;
 
-import org.bitlet.weupnp.NameValueHandler;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -301,28 +297,8 @@ class UPnPManager {
 
 			conn.getOutputStream().write(messageBytes);
 
-			Map<String, String> nameValue = new HashMap<>();
-			XMLReader parser = XMLReaderFactory.createXMLReader();
-			parser.setContentHandler(new NameValueHandler(nameValue));
-			if (conn.getResponseCode() == HttpURLConnection.HTTP_INTERNAL_ERROR) {
-				try {
-					// attempt to parse the error message
-					parser.parse(new InputSource(conn.getErrorStream()));
-				} catch (SAXException e) {
-					// ignore the exception
-					// FIXME We probably need to find a better way to return
-					// significant information when we reach this point
-				}
-				conn.disconnect();
-				System.out.println(nameValue);
-			} else {
-				parser.parse(new InputSource(conn.getInputStream()));
-				conn.disconnect();
-				System.out.println(nameValue);
-			}
-
 			conn.disconnect();
-		} catch (IOException | SAXException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
