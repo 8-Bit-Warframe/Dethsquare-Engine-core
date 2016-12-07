@@ -41,7 +41,6 @@ class UPnPManager {
 	private static final String[] SEARCH_TYPES = {"urn:schemas-upnp-org:device:InternetGatewayDevice:1",
 			"urn:schemas-upnp-org:service:WANIPConnection:1",
 			"urn:schemas-upnp-org:service:WANPPPConnection:1"};
-	private static List<InetAddress> localAddresses;
 	private static String location;
 	private static String baseUrl;
 	private static ArrayList<String[]> services = new ArrayList<>();
@@ -189,7 +188,7 @@ class UPnPManager {
 	}
 
 	static void discover() {
-		localAddresses = getLocalInetAddresses();
+		List<InetAddress> localAddresses = getLocalInetAddresses();
 		ArrayList<DiscoveryThread> discoveryThreads = new ArrayList<>(localAddresses.size());
 		for (InetAddress address : localAddresses) {
 			DiscoveryThread discoveryThread = new DiscoveryThread(address);
