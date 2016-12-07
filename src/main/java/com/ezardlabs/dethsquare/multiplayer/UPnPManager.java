@@ -4,7 +4,12 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.DefaultHandler;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -197,6 +202,7 @@ class UPnPManager {
 			} catch (InterruptedException ignored) {
 			}
 		}
+		System.out.println("Base URL: " + baseUrl);
 	}
 
 	private static void parseXML(Node element) {
@@ -297,8 +303,57 @@ class UPnPManager {
 
 			conn.getOutputStream().write(messageBytes);
 
+			class NameValueHandler extends DefaultHandler {
+				private Map<String,String> nameValue;
+				private String currentElement;
+
+				private NameValueHandler(Map<String, String> nameValue) {
+					this.nameValue = nameValue;
+				}
+
+				@Override
+				public void startElement(String uri, String localName, String qName,
+						Attributes attributes) throws SAXException {
+					currentElement = localName;
+				}
+
+				@Override
+				public void endElement(String uri, String localName, String qName)
+						throws SAXException {
+					currentElement = null;
+				}
+
+				@Override
+				public void characters(char[] ch, int start, int length)
+						throws SAXException {
+					if (currentElement != null) {
+						String value = new String(ch,start,length);
+						String old = nameValue.put(currentElement, value);
+						if (old != null) {
+							nameValue.put(currentElement, old + value);
+						}
+					}
+				}
+			}
+
+			Map<String, String> nameValue = new HashMap<>();
+			XMLReader parser = XMLReaderFactory.createXMLReader();
+			parser.setContentHandler(new NameValueHandler(nameValue));
+			if (conn.getResponseCode() == HttpURLConnection.HTTP_INTERNAL_ERROR) {
+				try {
+					parser.parse(new InputSource(conn.getErrorStream()));
+				} catch (SAXException ignored) {
+				}
+				conn.disconnect();
+				System.out.println(nameValue);
+			} else {
+				parser.parse(new InputSource(conn.getInputStream()));
+				conn.disconnect();
+				System.out.println(nameValue);
+			}
+
 			conn.disconnect();
-		} catch (IOException e) {
+		} catch (IOException | SAXException e) {
 			e.printStackTrace();
 		}
 	}
