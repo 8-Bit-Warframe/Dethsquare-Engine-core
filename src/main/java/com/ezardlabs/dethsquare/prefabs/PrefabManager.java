@@ -61,7 +61,7 @@ public class PrefabManager {
 	public static GameObject loadPrefab(String name) {
 		PrefabCreator prefab = prefabs.get(name);
 		if (prefab == null) {
-			throw new RuntimeException("Prefab '" + name + "' not found");
+			throw new PrefabNotFoundException("Prefab '" + name + "' not found");
 		} else {
 			return prefab.create();
 		}
@@ -74,5 +74,12 @@ public class PrefabManager {
 	 */
 	public static void removePrefab(String name) {
 		prefabs.remove(name);
+	}
+
+	private static class PrefabNotFoundException extends RuntimeException {
+
+		private PrefabNotFoundException(String prefabName) {
+			super("Prefab '" + prefabName + "' not found");
+		}
 	}
 }
