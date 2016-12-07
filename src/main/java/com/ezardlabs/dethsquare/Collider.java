@@ -153,7 +153,10 @@ public final class Collider extends BoundedComponent {
 		bounds.right = lastBounds.right;
 		bounds.bottom = lastBounds.bottom;
 
-		if (possible.size() > 0) {
+		if (possible.isEmpty()) {
+			transform.position.x += x;
+			transform.position.y += y;
+		} else {
 			transform.position.y += y;
 			recalculateBounds();
 			Collider c;
@@ -198,9 +201,6 @@ public final class Collider extends BoundedComponent {
 					recalculateBounds();
 				}
 			}
-		} else {
-			transform.position.x += x;
-			transform.position.y += y;
 		}
 		recalculateBounds();
 		triggerCheck();
