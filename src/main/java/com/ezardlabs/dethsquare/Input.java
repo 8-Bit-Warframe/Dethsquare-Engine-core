@@ -220,7 +220,7 @@ public final class Input {
 				touches[i].phase = Touch.TouchPhase.STATIONARY;
 			}
 		}
-		if (touchesToRemove.size() > 0) {
+		if (!touchesToRemove.isEmpty()) {
 			Touch[] temp = new Touch[touches.length - touchesToRemove.size()];
 			int count = 0;
 			//noinspection ForLoopReplaceableByForEach
