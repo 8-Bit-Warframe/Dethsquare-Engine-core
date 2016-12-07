@@ -16,7 +16,7 @@ public class PrefabManager {
 	 */
 	public static void addPrefab(String name, PrefabCreator prefab) {
 		if (name.endsWith("_other")) {
-			throw new Error("Prefab name cannot end with \"_other\"");
+			throw new IllegalArgumentException("Prefab name cannot end with \"_other\"");
 		} else {
 			prefabs.put(name, prefab);
 		}

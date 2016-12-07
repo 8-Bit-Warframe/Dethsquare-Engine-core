@@ -13,7 +13,7 @@ public class LevelManager {
 
 	public static void loadLevel(String name) {
 		if (loadingLevel) {
-			throw new Error("Cannot load a level whilst another level is being loaded");
+			throw new IllegalStateException("Cannot load a level whilst another level is being loaded");
 		}
 		loadingLevel = true;
 		currentLevelName = name;
