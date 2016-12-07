@@ -302,13 +302,10 @@ class UPnPManager {
 
 			conn.getOutputStream().write(messageBytes);
 
-			class NameValueHandler extends DefaultHandler {
-				private Map<String,String> nameValue;
+			Map<String, String> nameValue = new HashMap<>();
+			XMLReader parser = XMLReaderFactory.createXMLReader();
+			parser.setContentHandler(new DefaultHandler() {
 				private String currentElement;
-
-				private NameValueHandler(Map<String, String> nameValue) {
-					this.nameValue = nameValue;
-				}
 
 				@Override
 				public void startElement(String uri, String localName, String qName,
@@ -333,11 +330,7 @@ class UPnPManager {
 						}
 					}
 				}
-			}
-
-			Map<String, String> nameValue = new HashMap<>();
-			XMLReader parser = XMLReaderFactory.createXMLReader();
-			parser.setContentHandler(new NameValueHandler(nameValue));
+			});
 			if (conn.getResponseCode() == HttpURLConnection.HTTP_INTERNAL_ERROR) {
 				try {
 					parser.parse(new InputSource(conn.getErrorStream()));
