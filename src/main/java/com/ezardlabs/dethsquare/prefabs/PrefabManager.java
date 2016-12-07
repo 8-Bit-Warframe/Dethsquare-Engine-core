@@ -59,7 +59,12 @@ public class PrefabManager {
 	 * @return The {@link GameObject} prefab with the given name
 	 */
 	public static GameObject loadPrefab(String name) {
-		return prefabs.get(name).create();
+		PrefabCreator prefab = prefabs.get(name);
+		if (prefab == null) {
+			throw new RuntimeException("Prefab '" + name + "' not found");
+		} else {
+			return prefab.create();
+		}
 	}
 
 	/**
