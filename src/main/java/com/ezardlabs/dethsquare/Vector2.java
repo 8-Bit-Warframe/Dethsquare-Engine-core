@@ -43,6 +43,16 @@ public final class Vector2 {
 	}
 
 	/**
+	 * Sets the x and y components of the vector to be the same as teh given source vector
+	 * @param source the source vector to copy x and y component values from
+	 */
+	public void set(Vector2 source) {
+		if (listener != null) listener.onVector2Changed(source.x - x, source.y - y);
+		x = source.x;
+		y = source.y;
+	}
+
+	/**
 	 * Returns a new {@link Vector2} that has been offset by the given parameters
 	 * @param x The amount to offset the x coordinate by
 	 * @param y The amount to offset the y coordinate by
