@@ -15,11 +15,10 @@ public final class RectF {
 	public float right;
 	public float bottom;
 
-	private Vector2[] temp1 = {new Vector2(),
+	private Vector2[] temp = {new Vector2(),
 			new Vector2(),
 			new Vector2(),
 			new Vector2()};
-	private boolean[] temp2 = new boolean[4];
 
 	/**
 	 * Create a new empty RectF. All coordinates are initialized to 0.
@@ -426,21 +425,26 @@ public final class RectF {
 	 * @return The intersect point if one exists; null otherwise
 	 */
 	public Vector2 intersect(Vector2 a, Vector2 b) {
-		temp2[0] = intersect(a.x, a.y, b.x, b.y, left, top, left, bottom, temp1[0]); // left
-		temp2[1] = intersect(a.x, a.y, b.x, b.y, left, top, right, top, temp1[1]); // top
-		temp2[2] = intersect(a.x, a.y, b.x, b.y, right, top, right, bottom, temp1[2]); // right
-		temp2[3] = intersect(a.x, a.y, b.x, b.y, left, bottom, right, bottom, temp1[3]); // bottom
+		boolean[] intersects = {
+				// left
+				intersect(a.x, a.y, b.x, b.y, left, top, left, bottom, this.temp[0]),
+				// top
+				intersect(a.x, a.y, b.x, b.y, left, top, right, top, this.temp[1]),
+				// right
+				intersect(a.x, a.y, b.x, b.y, right, top, right, bottom, this.temp[2]),
+				// bottom
+				intersect(a.x, a.y, b.x, b.y, left, bottom, right, bottom, this.temp[3])};
 
-		double temp;
+		double current;
 		double min = Double.MAX_VALUE;
 		int best = -1;
 		for (int i = 0; i < 4; i++) {
-			if (temp2[i] && (temp = Vector2.distance(a, temp1[i])) < min) {
-				min = temp;
+			if (intersects[i] && (current = Vector2.distance(a, temp[i])) < min) {
+				min = current;
 				best = i;
 			}
 		}
-		return best == -1 ? null : temp1[best];
+		return best == -1 ? null : temp[best];
 	}
 
 	private boolean intersect(float x1, float y1, float x2, float y2, float x3, float y3, float
