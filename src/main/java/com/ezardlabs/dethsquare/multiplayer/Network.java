@@ -90,6 +90,7 @@ public class Network {
 		if (mt.data != null) {
 			listener.onNetworkStateChanged(State.MATCHMAKING_FOUND);
 			JSONObject data = new JSONObject(mt.data);
+			mt.data = null;
 			playerId = data.getInt("id");
 			host = data.getBoolean("host");
 
