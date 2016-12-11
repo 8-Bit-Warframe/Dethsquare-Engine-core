@@ -63,6 +63,26 @@ public final class Vector2 {
 	}
 
 	/**
+	 * Returns the length of this vector
+	 *
+	 * If you want to compare the magnitudes of 2 vectors then it is advisable to compare their
+	 * square magnitudes({@link #sqrMagnitude()}) as they are faster to compute
+	 *
+	 * @return The length of this vector
+	 */
+	public double magnitude() {
+		return Math.sqrt(x * x + y * y);
+	}
+
+	/**
+	 * Returns the squared length of this vector
+	 * @return The squared length of this vector
+	 */
+	public float sqrMagnitude() {
+		return x * x + y * y;
+	}
+
+	/**
 	 * Makes this vector have a magnitude of 1
 	 *
 	 * Note that this method modifies the vector it is called on; if you want to keep the vector
