@@ -236,7 +236,7 @@ public class Network {
 				while (true) {
 					synchronized (messages) {
 						messages.wait();
-						while (messages.size() > 0) {
+						while (!messages.isEmpty()) {
 							byte[] message = messages.remove(0);
 							for (int i = 0; i < addresses.length; i++) {
 								packets[i].setData(message);
