@@ -63,6 +63,32 @@ public final class Vector2 {
 	}
 
 	/**
+	 * Makes this vector have a magnitude of 1
+	 *
+	 * Note that this method modifies the vector it is called on; if you want to keep the vector
+	 * unchanged, then use {@link #normalised()} instead
+	 */
+	public void normalise() {
+		double length = Math.sqrt(x * x + y * y);
+		x /= length;
+		y /= length;
+	}
+
+	/**
+	 * Returns this vector with a magnitude of 1
+	 *
+	 * Not that this method does not modify the vector it is caleld on; if you want to modify the
+	 * vector then use {@link #normalise()} instead
+	 *
+	 * @return The normalised version of this vector
+	 */
+	public Vector2 normalised() {
+		Vector2 v = new Vector2(this);
+		v.normalise();
+		return v;
+	}
+
+	/**
 	 * Calculates the distance between 2 vector points
 	 * @param a the first point
 	 * @param b the second point
