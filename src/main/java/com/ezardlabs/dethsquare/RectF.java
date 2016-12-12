@@ -203,6 +203,25 @@ public final class RectF {
 	}
 
 	/**
+	 * Modify the width of the rectangle by setting its right coordinate to its left coordinate
+	 * plus the given width
+	 * @param width The width that you want the rectangle to be
+	 */
+	public void setWidth(float width) {
+		right = left + width;
+	}
+
+
+	/**
+	 * Modify the height of the rectangle by setting its bottom coordinate to its top coordinate
+	 * plus the given height
+	 * @param height The height that you want the rectangle to be
+	 */
+	public void setHeight(float height) {
+		bottom = top + height;
+	}
+
+	/**
 	 * Offset the rectangle by adding dx to its left and right coordinates, and
 	 * adding dy to its top and bottom coordinates.
 	 *
