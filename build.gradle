@@ -9,4 +9,12 @@ buildscript {
     }
 }
 
+repositories {
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    compile 'com.github.8-Bit-Warframe:Dethsquare-Engine-pc:master-SNAPSHOT'
+}
+
 group = "com.github.8-Bit-Warframe"
