@@ -1,3 +1,12 @@
+apply plugin: 'java'
 apply plugin: 'maven'
+
+buildscript {
+    repositories {
+        maven {
+            url 'https://plugins.gradle.org/m2/'
+        }
+    }
+}
 
 group = "com.github.8-Bit-Warframe"
